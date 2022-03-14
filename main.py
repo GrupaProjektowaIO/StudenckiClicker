@@ -22,10 +22,10 @@ while running:
                     color = 255
 
 
-    # Fill the background with white
-    screen.fill((255, 255, 255))
+    # Fill the background with white 
+    screen.fill((255, 255, 254))
 
-    # Draw a solid blue circle in the center
+    # Draw a solid blue circle in the center test
     pygame.draw.rect(screen, (0,0,color), (200, 150, 100, 50))
 
     # Flip the display
