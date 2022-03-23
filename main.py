@@ -15,6 +15,8 @@ TIME_COLOR = (2, 155, 0)
 
 objective_title_color = (255, 255, 230)
 
+#test
+
 # objective pastelowe w kolorze statow
 # przy ryzyku przegranej, wystapi minigierka, ktora pozwoli odzyskac troche statystyki (gierka a la dinozaur z Chroma)
 # kiedy pasek postepu czynnosci to krysztalki zostaja przeniesione do odpowiedniej statystyki
