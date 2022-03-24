@@ -15,11 +15,6 @@ TIME_COLOR = (2, 155, 0)
 
 objective_title_color = (255, 255, 230)
 
-#test
-#test2
-#test3
-#test4
-
 # objective pastelowe w kolorze statow
 # przy ryzyku przegranej, wystapi minigierka, ktora pozwoli odzyskac troche statystyki (gierka a la dinozaur z Chroma)
 # kiedy pasek postepu czynnosci to krysztalki zostaja przeniesione do odpowiedniej statystyki
@@ -38,15 +33,18 @@ timer = pygame.time.Clock()
 font = pygame.font.SysFont('Comic Sans MS, Arial, Times New Roman', 16, bold=True, italic=True, )
 font_title = pygame.font.SysFont('Arial', 18, bold=True)
 font_desc = pygame.font.SysFont('Arial', 16)
-text_play = font.render("Nowa Gra", True, (255, 255, 255))
+font_menu_button = pygame.font.SysFont('Arial', 14)
+text_play = font_menu_button.render("Nowa Gra", True, (0, 0, 0))
 
 #text = font.render("Zadania", True, (255, 255, 255))
 
 #sprites - main menu
+main_menu_background = pygame.image.load("sprites/main_menu_background.png")
 title = pygame.image.load("sprites/title.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
 
 #sprites - game
+game_background = pygame.image.load("sprites/game_background.png")
 board = pygame.image.load("sprites/board.png")
 
 healthbar = pygame.image.load("sprites/health_bar.png")
@@ -55,6 +53,15 @@ timebar = pygame.image.load("sprites/time_bar.png")
 healthicon = pygame.image.load("sprites/health_icon.png")
 sanityicon = pygame.image.load("sprites/sanity_icon.png")
 timeicon = pygame.image.load("sprites/time_icon.png")
+deathicon = pygame.image.load("sprites/sanity_icon_black.png")
+
+healthicon_white = pygame.image.load("sprites/health_icon_white.png")
+healthicon_black = pygame.image.load("sprites/health_icon_black.png")
+sanityicon_white = pygame.image.load("sprites/sanity_icon_white.png")
+sanityicon_black = pygame.image.load("sprites/sanity_icon_black.png")
+timeicon_white = pygame.image.load("sprites/time_icon_white.png")
+timeicon_black = pygame.image.load("sprites/time_icon_black.png")
+
 statbar_mask = pygame.Surface(pygame.image.load("sprites/stat_bar_mask.png").get_size()).convert_alpha()
 statbar_mask.fill((255,255,255))
 
@@ -67,6 +74,12 @@ crystal_green = pygame.image.load("sprites/crystal_green.png")
 crystal_blue = pygame.image.load("sprites/crystal_blue.png")
 
 party = pygame.image.load("sprites/objective_icons/party.png")
+
+book = pygame.image.load("sprites/power_ups/book.png")
+clock = pygame.image.load("sprites/power_ups/clock.png")
+coffe = pygame.image.load("sprites/power_ups/coffe.png")
+dumbell = pygame.image.load("sprites/power_ups/dumbell.png")
+energy_drink = pygame.image.load("sprites/power_ups/energy_drink.png")
 
 #audio
 clickSound = pygame.mixer.Sound('audio/click.wav')
@@ -163,58 +176,67 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
     o_type = objectiveTypes[objectives[index].objectiveType]
     if reversed:
         panel = objective_panel_reversed
-    renderScaled(panel, centerAnchor(231, 123, reversed, percent_y, (1 - reversed * 2) * (231 // 2) * offset_x))
+    renderScaled(panel, centerAnchor(256, 128, reversed, percent_y, (1 - reversed * 2) * (256 // 2) * offset_x))
 
     panel.blit(o_type.renderedTitle, (panel.get_width() / 2 - o_type.renderedTitle.get_rect().width / 2, panel.get_height() / 2 - o_type.renderedTitle.get_rect().height / 2 - 40))
     panel.blit(o_type.renderedDesc, (20, panel.get_height() / 2 - o_type.renderedTitle.get_rect().height / 2 + 20))
     #panel.blit(text, (panel.get_width() / 2 - text.get_rect().width / 2, panel.get_height() / 2 - text.get_rect().height / 2))
 
     if objectives[index].crystalType == 0:
-        renderScaled(crystal_red, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_red, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
     elif objectives[index].crystalType == 1:
-        renderScaled(crystal_blue, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_blue, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
     else:
-        renderScaled(crystal_green, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_green, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
 
     if o_type.statImpact == HIGH:
-        renderScaled(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), -21))
+        renderScaled(crystal_white, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x)), -21))
     else:
-        renderScaled(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), -21))
+        renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x)), -21))
 
     if o_type.statImpact >= MEDIUM:
-        renderScaled(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (253 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_white, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
     else:
-        renderScaled(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (253 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
 
     if o_type.statImpact >= LOW:
-        renderScaled(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), 21))
+        renderScaled(crystal_white, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x)), 21))
     else:
-        renderScaled(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), 21))
+        renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x)), 21))
 
 def renderMainMenu():
-    screen.fill((36,36,36))
-    renderScaled(title, centerAnchor(415, 128, 0.5, 0, 0, 128 // 2 + 30))
-    renderScaled(menu_button, centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2))
-    renderScaled(text_play, centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2))
-    renderScaled(menu_button, centerAnchor(257, 79, 0.5, 0.40, 0, 128 // 2))
-    renderScaled(menu_button, centerAnchor(257, 79, 0.5, 0.55, 0, (128 // 2) * 1.62))
-
+    renderScaled(main_menu_background, centerAnchor(1920, 1080))
+    renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.25, 0, 128 // 2))
+    renderScaled(text_play, centerAnchor(221, 80, 0.5, 0.25, 0, 128 // 2))
+    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2))
+    renderScaled(text_play, centerAnchor(221, 80, 0.5, 0.40, 0, 128 // 2))
+    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.55, 0, (128 // 2) * 1.62))
+def renderLoginPanel():
+    renderScaled(main_menu_background, centerAnchor(1920, 1080))
+    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.15, 0, 128 // 2))
+    renderScaled(text_play, centerAnchor(221, 80, 0.5, 0.15, 0, 128 // 2))
+    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.30, 0, 128 // 2))
+    renderScaled(text_play, centerAnchor(221, 80, 0.5, 0.30, 0, 128 // 2))
 def renderGame():
-    screen.fill((0, 0, 0))
-    renderScaled(board, centerAnchor(415, 256, 0.5, 0, 0, 256 // 2 + 20))
+    renderScaled(game_background, centerAnchor(1920, 1080))
+    renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
 
-    stat_rect = centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 - 70)
+    stat_rect = centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70)
 
-    renderScaled(healthbar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 - 70))
+    renderScaled(healthbar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70))
     #healthbar.blit(statbar_mask, (0, 0), special_flags=pygame.BLEND_RGB_MULT)
 
     #pygame.draw.rect(screen, HEALTH_COLOR, stat_rect)
 
-    renderScaled(sanitybar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20))
-    renderScaled(timebar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 + 70))
-    renderScaled(healthicon, centerAnchor(56, 65, 0.5, 0, 0, 256 // 2 + 20 - 70))
-    renderScaled(sanityicon, centerAnchor(57, 58, 0.5, 0, 0, 256 // 2 + 20))
-    renderScaled(timeicon, centerAnchor(49, 56, 0.5, 0, 0, 256 // 2 + 20 + 70))
+    renderScaled(sanitybar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20))
+    renderScaled(timebar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 + 70))
+    renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 - 70))
+    renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20))
+    renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 + 70))
+    renderScaled(healthicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20 - 70))
+    renderScaled(sanityicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20))
+    renderScaled(timeicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20 + 70))
 
     renderObjectivePanel(0.25, 1, 0)  # od -1.5 do 1
     renderObjectivePanel(0.5, 1, 1)
@@ -230,6 +252,8 @@ while running:
 
     if gameState == "main_menu":
         renderMainMenu()
+    elif gameState == "login_panel":
+        renderLoginPanel()
     elif gameState == "game":
         renderGame()
 
@@ -239,8 +263,10 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             if gameState == "main_menu":
-                if centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(256, 80, 0.5, 0.25, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "game"
+                elif centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                    gameState = "login_panel"
             elif gameState == "game":
                 pass
                 #if centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
