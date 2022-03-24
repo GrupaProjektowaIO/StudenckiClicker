@@ -150,66 +150,71 @@ time_drain = 0.1
 
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
-    return pygame.Rect(screen.get_width() * percent_x - width / 2 + offset_x,
-                       screen.get_height() * percent_y - height / 2 + offset_y,
-                       width, height)
+    x_scale = screen.get_width() / 1920
+    y_scale = screen.get_height() / 1080
+    return pygame.Rect(screen.get_width() * percent_x - width / 2 * x_scale + offset_x * x_scale,
+                       screen.get_height() * percent_y - height / 2 * y_scale + offset_y * y_scale,
+                       width * x_scale, height * y_scale)
+def renderScaled(sprite, rect):
+    scaled = pygame.transform.scale(sprite, (rect.w, rect.h))
+    screen.blit(scaled, rect)
 def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
     panel = objective_panel
     o_type = objectiveTypes[objectives[index].objectiveType]
     if reversed:
         panel = objective_panel_reversed
-    screen.blit(panel, centerAnchor(231, 123, reversed, percent_y, (1 - reversed * 2) * (231 // 2) * offset_x))
+    renderScaled(panel, centerAnchor(231, 123, reversed, percent_y, (1 - reversed * 2) * (231 // 2) * offset_x))
 
     panel.blit(o_type.renderedTitle, (panel.get_width() / 2 - o_type.renderedTitle.get_rect().width / 2, panel.get_height() / 2 - o_type.renderedTitle.get_rect().height / 2 - 40))
     panel.blit(o_type.renderedDesc, (20, panel.get_height() / 2 - o_type.renderedTitle.get_rect().height / 2 + 20))
     #panel.blit(text, (panel.get_width() / 2 - text.get_rect().width / 2, panel.get_height() / 2 - text.get_rect().height / 2))
 
     if objectives[index].crystalType == 0:
-        screen.blit(crystal_red, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_red, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
     elif objectives[index].crystalType == 1:
-        screen.blit(crystal_blue, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_blue, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
     else:
-        screen.blit(crystal_green, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_green, centerAnchor(25, 25, reversed, percent_y, (1 - reversed * 2) * (231 - (231 // 2) * (1 - offset_x))))
 
     if o_type.statImpact == HIGH:
-        screen.blit(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), -21))
+        renderScaled(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), -21))
     else:
-        screen.blit(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), -21))
+        renderScaled(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), -21))
 
     if o_type.statImpact >= MEDIUM:
-        screen.blit(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (253 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (253 - (231 // 2) * (1 - offset_x))))
     else:
-        screen.blit(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (253 - (231 // 2) * (1 - offset_x))))
+        renderScaled(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (253 - (231 // 2) * (1 - offset_x))))
 
     if o_type.statImpact >= LOW:
-        screen.blit(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), 21))
+        renderScaled(crystal_white, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), 21))
     else:
-        screen.blit(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), 21))
+        renderScaled(crystal_black, centerAnchor(14, 14, reversed, percent_y, (1 - reversed * 2) * (248 - (231 // 2) * (1 - offset_x)), 21))
 
 def renderMainMenu():
     screen.fill((36,36,36))
-    screen.blit(title, centerAnchor(415, 128, 0.5, 0, 0, 128 // 2 + 30))
-    screen.blit(menu_button, centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2))
-    screen.blit(text_play, centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2))
-    screen.blit(menu_button, centerAnchor(257, 79, 0.5, 0.40, 0, 128 // 2))
-    screen.blit(menu_button, centerAnchor(257, 79, 0.5, 0.55, 0, (128 // 2) * 1.62))
+    renderScaled(title, centerAnchor(415, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(menu_button, centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2))
+    renderScaled(text_play, centerAnchor(257, 79, 0.5, 0.25, 0, 128 // 2))
+    renderScaled(menu_button, centerAnchor(257, 79, 0.5, 0.40, 0, 128 // 2))
+    renderScaled(menu_button, centerAnchor(257, 79, 0.5, 0.55, 0, (128 // 2) * 1.62))
 
 def renderGame():
     screen.fill((0, 0, 0))
-    screen.blit(board, centerAnchor(415, 256, 0.5, 0, 0, 256 // 2 + 20))
+    renderScaled(board, centerAnchor(415, 256, 0.5, 0, 0, 256 // 2 + 20))
 
     stat_rect = centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 - 70)
 
-    screen.blit(healthbar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 - 70))
-    healthbar.blit(statbar_mask, (0, 0), special_flags=pygame.BLEND_RGB_MULT)
+    renderScaled(healthbar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 - 70))
+    #healthbar.blit(statbar_mask, (0, 0), special_flags=pygame.BLEND_RGB_MULT)
 
     #pygame.draw.rect(screen, HEALTH_COLOR, stat_rect)
 
-    screen.blit(sanitybar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20))
-    screen.blit(timebar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 + 70))
-    screen.blit(healthicon, centerAnchor(56, 65, 0.5, 0, 0, 256 // 2 + 20 - 70))
-    screen.blit(sanityicon, centerAnchor(57, 58, 0.5, 0, 0, 256 // 2 + 20))
-    screen.blit(timeicon, centerAnchor(49, 56, 0.5, 0, 0, 256 // 2 + 20 + 70))
+    renderScaled(sanitybar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20))
+    renderScaled(timebar, centerAnchor(379, 70, 0.5, 0, 0, 256 // 2 + 20 + 70))
+    renderScaled(healthicon, centerAnchor(56, 65, 0.5, 0, 0, 256 // 2 + 20 - 70))
+    renderScaled(sanityicon, centerAnchor(57, 58, 0.5, 0, 0, 256 // 2 + 20))
+    renderScaled(timeicon, centerAnchor(49, 56, 0.5, 0, 0, 256 // 2 + 20 + 70))
 
     renderObjectivePanel(0.25, 1, 0)  # od -1.5 do 1
     renderObjectivePanel(0.5, 1, 1)
