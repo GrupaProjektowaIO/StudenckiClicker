@@ -31,9 +31,9 @@ timer = pygame.time.Clock()
 
 #fonty
 font = pygame.font.SysFont('Comic Sans MS, Arial, Times New Roman', 16, bold=True, italic=True, )
-font_title = pygame.font.SysFont('Arial', 18, bold=True)
+font_title = pygame.font.SysFont('Arial', 24, bold=True)
 font_desc = pygame.font.SysFont('Arial', 16)
-font_menu_button = pygame.font.SysFont('Arial', 14)
+font_menu_button = pygame.font.SysFont('Arial', 24)
 text_play = font_menu_button.render("Nowa Gra", True, (0, 0, 0))
 text_login = font_menu_button.render("Logowanie", True, (0, 0, 0))
 text_achievements = font_menu_button.render("Osiągnięcia", True, (0, 0, 0))
