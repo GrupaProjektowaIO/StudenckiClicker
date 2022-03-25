@@ -36,10 +36,15 @@ font_desc = pygame.font.SysFont('Arial', 16)
 font_menu_button = pygame.font.SysFont('Arial', 24)
 text_play = font_menu_button.render("Nowa Gra", True, (0, 0, 0))
 text_login = font_menu_button.render("Logowanie", True, (0, 0, 0))
+text_username = font_menu_button.render("Login: ", True, (0, 0, 0))
+text_password = font_menu_button.render("Hasło: ", True, (0, 0, 0))
+text_log_in = font_menu_button.render("Zaloguj się", True, (0, 0, 0))
+text_register = font_menu_button.render("Zarejestruj się...", True, (0, 0, 0))
 text_achievements = font_menu_button.render("Osiągnięcia", True, (0, 0, 0))
+text_back = font_menu_button.render("Powrót", True, (0, 0, 0))
 text_exit = font_menu_button.render("Wyjście", True, (0, 0, 0))
 
-#text = font.render("Zadania", True, (255, 255, 255))
+text_block_container = pygame.image.load("sprites/bar.png")
 
 #sprites - main menu
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
@@ -88,6 +93,24 @@ clickSound = pygame.mixer.Sound('audio/click.wav')
 winclickSound = pygame.mixer.Sound('audio/winclick.wav')
 midclickSound = pygame.mixer.Sound('audio/midclick.wav')
 
+#animations
+class Animation:
+    def __init__(self, name, frame_count, fps):
+        self.timer = 0
+        self.next = 1000 / fps
+        self.index = 0
+        self.frames = []
+        for i in range(1, frame_count + 1):
+            self.frames.append(pygame.image.load("animations/" + name + "/" + name + str(i) + ".png"))
+    def play(self):
+        self.timer += timer.get_time()
+        if self.timer >= self.next:
+            self.timer -= self.next
+            self.index += 1
+            if self.index >= len(self.frames):
+                self.index = 0
+        return self.frames[self.index]
+matrix = Animation("matrix", 22, 12)
 class Objective:
     def __init__(self):
         self.points = 0
@@ -165,6 +188,14 @@ time_max = 100
 time_current = 100
 time_drain = 0.1
 
+active_text_box = ""
+text_boxes = \
+{
+    "username": "",
+    "password": ""
+}
+
+
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
     x_scale = screen.get_width() / 1920
@@ -175,6 +206,30 @@ def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
 def renderScaled(sprite, rect):
     scaled = pygame.transform.scale(sprite, (rect.w, rect.h))
     screen.blit(scaled, rect)
+def renderTextBox(index, rect):
+    global active_text_box
+    text = text_boxes[index]
+    renderScaled(text_block_container, rect)
+    for e in pygame.event.get():
+        if e.type == pygame.QUIT:
+            running = False
+        elif e.type == pygame.MOUSEBUTTONDOWN:
+            m = pygame.mouse.get_pos()
+            if rect.collidepoint(m[0], m[1]):
+                active_text_box = index
+            else:
+                if active_text_box == index:
+                    active_text_box = ""
+        elif e.type == pygame.KEYDOWN:
+            if active_text_box == index:
+                if e.key == pygame.K_BACKSPACE:
+                    text = text[:-1]
+                else:
+                    text += e.unicode
+        pygame.event.post(e)
+    render = font.render(text, True, (255, 255, 255))
+    screen.blit(render, (rect.x + 5, rect.y + 5))
+    text_boxes[index] = text
 def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
     panel = objective_panel
     o_type = objectiveTypes[objectives[index].objectiveType]
@@ -184,8 +239,6 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
 
     renderScaled(o_type.renderedTitle, centerAnchor(128+64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, -44))
     renderScaled(o_type.renderedDesc, centerAnchor(128 + 64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, 36))
-    #panel.blit(o_type.renderedTitle, (panel.get_width() / 2 - o_type.renderedTitle.get_rect().width / 2, panel.get_height() / 2 - o_type.renderedTitle.get_rect().height / 2 - 40))
-    #panel.blit(o_type.renderedDesc, (20, panel.get_height() / 2 - o_type.renderedTitle.get_rect().height / 2 + 20))
 
     crystal_white = timeicon_white
     crystal_black = timeicon_black
@@ -229,24 +282,26 @@ def renderMainMenu():
     renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.70, 0, (128 // 2) * 1.62))
     renderScaled(text_exit, centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62))
 def renderLoginPanel():
-    renderScaled(main_menu_background, centerAnchor(1920, 1080))
-    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.15, 0, 128 // 2))
-    renderScaled(text_play, centerAnchor(221, 80, 0.5, 0.15, 0, 128 // 2))
-    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.30, 0, 128 // 2))
-    renderScaled(text_play, centerAnchor(221, 80, 0.5, 0.30, 0, 128 // 2))
+    renderScaled(matrix.play(), centerAnchor(1920, 1080))
+    renderScaled(title, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
+    renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
+    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
+    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
+    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
+    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
+    renderScaled(text_log_in, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
+    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2))
+    renderScaled(text_register, centerAnchor(157, 60, 0.5, 0.4, -136, 128 // 2))
+    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2))
+    renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 136, 128 // 2))
+def renderRegisterPanel():
+    renderScaled(game_background, centerAnchor(1920, 1080))
 def renderAchievements():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
 def renderGame():
     renderScaled(game_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
-
-    stat_rect = centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70)
-
     renderScaled(healthbar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70))
-    #healthbar.blit(statbar_mask, (0, 0), special_flags=pygame.BLEND_RGB_MULT)
-
-    #pygame.draw.rect(screen, HEALTH_COLOR, stat_rect)
-
     renderScaled(sanitybar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20))
     renderScaled(timebar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 + 70))
     renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 - 70))
@@ -267,11 +322,13 @@ def renderGame():
 gameState = "main_menu"
 running = True
 while running:
-
+    timer.tick(60)
     if gameState == "main_menu":
         renderMainMenu()
     elif gameState == "login_panel":
         renderLoginPanel()
+    elif gameState == "register_panel":
+        renderRegisterPanel()
     #elif gamestate == "achievements":
         #renderAchievements()
     elif gameState == "game":
@@ -291,6 +348,11 @@ while running:
                     #gameState = "achievements"
                 elif centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62).collidepoint(mouse[0], mouse[1]):
                     running = False
+            elif gameState == "login_panel":
+                if centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                    gameState = "main_menu"
+                elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                    gameState = "register_panel"
             elif gameState == "game":
                 if centerAnchor(256, 128, 0, 0.25, (1 - 0 * 2) * (256 // 2) * 1).collidepoint(mouse[0], mouse[1]):
                     objectives[0].clicked()
@@ -307,4 +369,5 @@ while running:
 
         elif event.type == pygame.QUIT:
             running = False
+
 pygame.quit()
