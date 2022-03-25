@@ -53,7 +53,7 @@ timebar = pygame.image.load("sprites/time_bar.png")
 healthicon = pygame.image.load("sprites/health_icon.png")
 sanityicon = pygame.image.load("sprites/sanity_icon.png")
 timeicon = pygame.image.load("sprites/time_icon.png")
-deathicon = pygame.image.load("sprites/sanity_icon_black.png")
+deathicon = pygame.image.load("sprites/death_icon.png")
 
 healthicon_white = pygame.image.load("sprites/health_icon_white.png")
 healthicon_black = pygame.image.load("sprites/health_icon_black.png")
