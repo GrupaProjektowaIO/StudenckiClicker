@@ -19,28 +19,33 @@ auth = firebase.auth()
 # Auth
 # Login
 
+logged_username = ""
 
-def login(email,password):
-    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+def login(email, password):
+    global logged_username
+    global gameState
     try:
-        if re.fullmatch(regex,email):
-            auth.sign_in_with_email_and_password(email, password)
-            print("Pomyslny login")
-    except:
-        print("Zly login lub haslo")
+        auth.sign_in_with_email_and_password(email, password)
+        print("Pomyslny login")
+        logged_username = email
+        gameState = "main_menu"
+    except Exception as e:
+        print(e)
 
 # Rejestracja
 
 
 def signUp(email,password):
-    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    global logged_username
+    global gameState
     print("Rejestracja")
     try:
-        if re.fullmatch(regex, email):
-            auth.create_user_with_email_and_password(email, password)
-            print("Pomyslnie zarejestrowano")
-    except:
-        print("Email juz istnieje")
+        auth.create_user_with_email_and_password(email, password)
+        print("Pomyslnie zarejestrowano")
+        logged_username = email
+        gameState = "main_menu"
+    except Exception as e:
+        print(e)
 
 # Baza danych
 
@@ -87,16 +92,23 @@ objective_title_color = (56, 0, 0)
 # tutoriale: formatowanie textu, maski, sound effects, przejscia pomiedzy ekranami,
 
 pygame.init()
-screen = pygame.display.set_mode([1920 / 2, 1080 / 2], pygame.RESIZABLE)
+screen = pygame.display.set_mode([1920, 1080],  pygame.FULLSCREEN)
 pygame.display.set_caption("Clicker")
-pygame.font.Font("freesansbold.ttf", 16)
+#pygame.font.Font("freesansbold.ttf", 16)
+pygame.font.Font("fonts/PressStart2P-Regular.ttf", 16)
 timer = pygame.time.Clock()
 
 #fonty
-font = pygame.font.SysFont('Comic Sans MS, Arial, Times New Roman', 16, bold=True, italic=True, )
-font_title = pygame.font.SysFont('Arial', 24, bold=True)
-font_desc = pygame.font.SysFont('Arial', 16)
-font_menu_button = pygame.font.SysFont('Arial', 24)
+#font = pygame.font.SysFont('Comic Sans MS, Arial, Times New Roman', 16, bold=True, italic=True, )
+#font_title = pygame.font.SysFont('Arial', 24, bold=True)
+#font_desc = pygame.font.SysFont('Arial', 16)VT323-Regular
+#font_menu_button = pygame.font.SysFont('Arial', 24)
+
+font = pygame.font.Font('fonts/VT323-Regular.ttf', 16, bold=True, italic=True, )
+font_title = pygame.font.Font('fonts/VT323-Regular.ttf', 24, bold=True)
+font_desc = pygame.font.Font('fonts/VT323-Regular.ttf', 16)
+font_menu_button = pygame.font.Font('fonts/VT323-Regular.ttf', 24)
+
 text_play = font_menu_button.render("Nowa Gra", True, (0, 0, 0))
 text_login = font_menu_button.render("Logowanie", True, (0, 0, 0))
 text_username = font_menu_button.render("Login: ", True, (0, 255, 0))
@@ -344,6 +356,12 @@ def renderMainMenu():
     renderScaled(text_achievements, centerAnchor(221, 70, 0.5, 0.55, 0, 128 // 2))
     renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.70, 0, (128 // 2) * 1.62))
     renderScaled(text_exit, centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62))
+    if not logged_username == "":
+        render = font.render("Zalogowano jako: " + logged_username, True, (0, 0, 0))
+        screen.blit(render, centerAnchor(100,20,0,0,70,20))
+    else:
+        render = font.render("Nie zalogowano", True, (0, 0, 0))
+        screen.blit(render, centerAnchor(100, 20, 0, 0, 70, 20))
 def renderLoginPanel():
     renderScaled(matrix.play(), centerAnchor(1920, 1080))
     renderScaled(login_panel_panel, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
@@ -426,11 +444,15 @@ while running:
             elif gameState == "login_panel":
                 if centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
+                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
+                    login(text_boxes['username'], text_boxes['password'])
                 elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "register_panel"
             elif gameState == "register_panel":
                 if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
+                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
+                    signUp(text_boxes['username'], text_boxes['password'])
             elif gameState == "game":
                 if centerAnchor(256, 128, 0, 0.25, (1 - 0 * 2) * (256 // 2) * 1).collidepoint(mouse[0], mouse[1]):
                     objectives[0].clicked()
