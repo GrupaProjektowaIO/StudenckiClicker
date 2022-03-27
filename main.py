@@ -368,9 +368,8 @@ def renderRegisterPanel():
     renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
     renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
     renderScaled(text_register2, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
-    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2))
-    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2))
-    renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 136, 128 // 2))
+    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
+    renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 0, 128 // 2))
     #signUp(text_boxes['username'], text_boxes['password'])
 def renderAchievements():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
