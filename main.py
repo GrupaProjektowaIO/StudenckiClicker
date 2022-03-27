@@ -428,6 +428,9 @@ while running:
                     gameState = "main_menu"
                 elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "register_panel"
+            elif gameState == "register_panel":
+                if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                    gameState = "main_menu"
             elif gameState == "game":
                 if centerAnchor(256, 128, 0, 0.25, (1 - 0 * 2) * (256 // 2) * 1).collidepoint(mouse[0], mouse[1]):
                     objectives[0].clicked()
