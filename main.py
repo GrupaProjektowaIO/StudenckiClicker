@@ -1,5 +1,68 @@
 import pygame
+import pyrebase
+import re
+firebaseConfig = {
+    "apiKey": "AIzaSyCr7nFZ_7LNowZtxN_jWAaYbjND4RCc4p4",
+    "authDomain": "studencki-clicker.firebaseapp.com",
+    "databaseURL": "https://studencki-clicker-default-rtdb.europe-west1.firebasedatabase.app/",
+    "projectId": "studencki-clicker",
+    "storageBucket": "studencki-clicker.appspot.com",
+    "messagingSenderId": "310176660017",
+    "appId": "1:310176660017:web:1754698f1e580d13e37310",
+    "measurementId": "G-YYBMKEH9J3"
+}
 
+firebase = pyrebase.initialize_app(firebaseConfig)
+db = firebase.database()
+auth = firebase.auth()
+
+# Auth
+# Login
+
+
+def login(email,password):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    try:
+        if re.fullmatch(regex,email):
+            auth.sign_in_with_email_and_password(email, password)
+            print("Pomyslny login")
+    except:
+        print("Zly login lub haslo")
+
+# Rejestracja
+
+
+def signUp(email,password):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    print("Rejestracja")
+    try:
+        if re.fullmatch(regex, email):
+            auth.create_user_with_email_and_password(email, password)
+            print("Pomyslnie zarejestrowano")
+    except:
+        print("Email juz istnieje")
+
+# Baza danych
+
+
+def dbPushHighscore(username):
+    data = {'nick': username, 'highscore': 101}
+    highscores = db.child('highscores').order_by_child(
+        "nick").equal_to(data['nick']).get()
+    print(highscores.val())
+    if (len(highscores.val()) > 0):
+        for highscore in highscores.each():
+            db.child("highscores").child(highscore.key()).update(
+                {"highscore": data['highscore']})
+    else:
+        db.child("highscores").push(data)
+
+
+def dbGetHighscore():
+    highscores = db.child("highscores").order_by_child(
+        "highscore").limit_to_last(100).get()
+    for highscore in reversed(highscores.each()):
+        print(highscore.val())
 #enums
 HEALTH = 0
 SANITY = 1
@@ -39,6 +102,7 @@ text_login = font_menu_button.render("Logowanie", True, (0, 0, 0))
 text_username = font_menu_button.render("Login: ", True, (0, 0, 0))
 text_password = font_menu_button.render("Hasło: ", True, (0, 0, 0))
 text_log_in = font_menu_button.render("Zaloguj się", True, (0, 0, 0))
+text_register2 = font_menu_button.render("Zarejestruj się", True, (0, 0, 0))
 text_register = font_menu_button.render("Zarejestruj się...", True, (0, 0, 0))
 text_achievements = font_menu_button.render("Osiągnięcia", True, (0, 0, 0))
 text_back = font_menu_button.render("Powrót", True, (0, 0, 0))
@@ -84,7 +148,7 @@ party = pygame.image.load("sprites/objective_icons/party.png")
 
 book = pygame.image.load("sprites/power_ups/book.png")
 clock = pygame.image.load("sprites/power_ups/clock.png")
-coffe = pygame.image.load("sprites/power_ups/coffe.png")
+coffee = pygame.image.load("sprites/power_ups/coffee.png")
 dumbell = pygame.image.load("sprites/power_ups/dumbell.png")
 energy_drink = pygame.image.load("sprites/power_ups/energy_drink.png")
 
@@ -189,8 +253,7 @@ time_current = 100
 time_drain = 0.1
 
 active_text_box = ""
-text_boxes = \
-{
+text_boxes = {
     "username": "",
     "password": ""
 }
@@ -294,8 +357,21 @@ def renderLoginPanel():
     renderScaled(text_register, centerAnchor(157, 60, 0.5, 0.4, -136, 128 // 2))
     renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2))
     renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 136, 128 // 2))
+    #login(text_boxes['username'],text_boxes['password'])
+
 def renderRegisterPanel():
-    renderScaled(game_background, centerAnchor(1920, 1080))
+    renderScaled(matrix.play(), centerAnchor(1920, 1080))
+    renderScaled(title, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
+    renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
+    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
+    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
+    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
+    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
+    renderScaled(text_register2, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
+    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2))
+    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2))
+    renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 136, 128 // 2))
+    #signUp(text_boxes['username'], text_boxes['password'])
 def renderAchievements():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
 def renderGame():
