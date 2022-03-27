@@ -99,8 +99,8 @@ font_desc = pygame.font.SysFont('Arial', 16)
 font_menu_button = pygame.font.SysFont('Arial', 24)
 text_play = font_menu_button.render("Nowa Gra", True, (0, 0, 0))
 text_login = font_menu_button.render("Logowanie", True, (0, 0, 0))
-text_username = font_menu_button.render("Login: ", True, (0, 0, 0))
-text_password = font_menu_button.render("Hasło: ", True, (0, 0, 0))
+text_username = font_menu_button.render("Login: ", True, (0, 255, 0))
+text_password = font_menu_button.render("Hasło: ", True, (0, 255, 0))
 text_log_in = font_menu_button.render("Zaloguj się", True, (0, 0, 0))
 text_register2 = font_menu_button.render("Zarejestruj się", True, (0, 0, 0))
 text_register = font_menu_button.render("Zarejestruj się...", True, (0, 0, 0))
@@ -108,13 +108,13 @@ text_achievements = font_menu_button.render("Osiągnięcia", True, (0, 0, 0))
 text_back = font_menu_button.render("Powrót", True, (0, 0, 0))
 text_exit = font_menu_button.render("Wyjście", True, (0, 0, 0))
 
-text_block_container = pygame.image.load("sprites/bar.png")
+text_block_container = pygame.image.load("sprites/text_container.png")
 
 #sprites - main menu
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
 title = pygame.image.load("sprites/title.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
-
+login_panel_panel = pygame.image.load("sprites/login_panel_panel.png")
 #sprites - game
 game_background = pygame.image.load("sprites/game_background.png")
 board = pygame.image.load("sprites/board.png")
@@ -346,7 +346,7 @@ def renderMainMenu():
     renderScaled(text_exit, centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62))
 def renderLoginPanel():
     renderScaled(matrix.play(), centerAnchor(1920, 1080))
-    renderScaled(title, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
+    renderScaled(login_panel_panel, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
     renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
     renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
@@ -361,7 +361,7 @@ def renderLoginPanel():
 
 def renderRegisterPanel():
     renderScaled(matrix.play(), centerAnchor(1920, 1080))
-    renderScaled(title, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
+    renderScaled(login_panel_panel, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
     renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
     renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
