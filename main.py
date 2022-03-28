@@ -1,6 +1,8 @@
 import pygame
 import pyrebase
 import re
+import random
+
 firebaseConfig = {
     "apiKey": "AIzaSyCr7nFZ_7LNowZtxN_jWAaYbjND4RCc4p4",
     "authDomain": "studencki-clicker.firebaseapp.com",
@@ -134,6 +136,9 @@ board = pygame.image.load("sprites/board.png")
 healthbar = pygame.image.load("sprites/bar.png")
 sanitybar = pygame.image.load("sprites/bar.png")
 timebar = pygame.image.load("sprites/bar.png")
+health_filler = pygame.image.load("sprites/health_filler.png")
+sanity_filler = pygame.image.load("sprites/sanity_filler.png")
+time_filler = pygame.image.load("sprites/time_filler.png")
 healthicon = pygame.image.load("sprites/health_icon.png")
 sanityicon = pygame.image.load("sprites/sanity_icon.png")
 timeicon = pygame.image.load("sprites/time_icon.png")
@@ -189,22 +194,70 @@ class Animation:
 matrix = Animation("matrix", 22, 12)
 class Objective:
     def __init__(self):
+        self.objectiveType = ""
         self.points = 0
         self.pointsToComplete = 100
         self.crystalType = 0
         self.addStat = 0
-        self.objectiveType = ""
         self.isCompleted = False
+        self.timer = 0
+        self.drain_cooldown = 0
     def setType(self, type_name):
         o_type = objectiveTypes[type_name]
-        self.objectiveType = o_type
+        self.objectiveType = type_name
         self.points = 0
-        self.pointsToComplete = o_type.statImpact // 2
+        if o_type.statImpact == LOW:
+            self.pointsToComplete = o_type.statImpact
+            self.drain_cooldown = 0.5
+        elif o_type.statImpact == MEDIUM:
+            self.pointsToComplete = o_type.statImpact / 1.25
+            self.drain_cooldown = 2
+        elif o_type.statImpact == HIGH:
+            self.pointsToComplete = o_type.statImpact / 1.5
+            self.drain_cooldown = 5
+        self.drain_cooldown *= 1000
         self.crystalType = o_type.statType
         self.addStat = o_type.statImpact
         self.isCompleted = False
+        self.timer = self.drain_cooldown
+    def setRandom(self):
+        self.setType(random.choice(list(objectiveTypes.keys())))
+    def update(self):
+        if self.timer < 0:
+            self.points -= timer.get_time() / 1000
+            if self.points < 0:
+                self.points = 0
+        else:
+            self.timer -= timer.get_time()
+        if self.isCompleted:
+            self.setRandom()
+
     def clicked(self):
-        midclickSound.play()
+        self.timer = self.drain_cooldown
+        self.points += 1
+        if self.points >= self.pointsToComplete:
+            winclickSound.play()
+            self.isCompleted = True
+            if self.crystalType == HEALTH:
+                global health_current
+                global health_max
+                health_current += self.addStat
+                if health_current > health_max:
+                    health_current = health_max
+            elif self.crystalType == SANITY:
+                global sanity_current
+                global sanity_max
+                sanity_current += self.addStat
+                if sanity_current > sanity_max:
+                    sanity_current = sanity_max
+            else:
+                global time_current
+                global time_max
+                time_current += self.addStat
+                if time_current > time_max:
+                    time_current = time_max
+        else:
+            clickSound.play()
 
 class ObjectiveType:
     def __init__(self, title, desc, statType, statImpact):
@@ -238,31 +291,31 @@ objectives =\
     Objective(), Objective(), Objective()
 ]
 
-objectives[0].crystalType = HEALTH
-objectives[1].crystalType = SANITY
-objectives[2].crystalType = TIME
-objectives[3].crystalType = HEALTH
-objectives[4].crystalType = SANITY
-objectives[5].crystalType = TIME
+"""objectives[0].setType("walk")
+objectives[1].setType("learn")
+objectives[2].setType("speed_boots")
+objectives[3].setType("gym")
+objectives[4].setType("music")
+objectives[5].setType("no_break")"""
 
-objectives[0].objectiveType = "walk"
-objectives[1].objectiveType = "learn"
-objectives[2].objectiveType = "speed_boots"
-objectives[3].objectiveType = "gym"
-objectives[4].objectiveType = "music"
-objectives[5].objectiveType = "no_break"
+objectives[0].setRandom()
+objectives[1].setRandom()
+objectives[2].setRandom()
+objectives[3].setRandom()
+objectives[4].setRandom()
+objectives[5].setRandom()
 
 health_max = 100
 health_current = 100
-health_drain = 0.1
+health_drain = 1
 
 sanity_max = 100
 sanity_current = 100
-sanity_drain = 0.1
+sanity_drain = 1.15
 
 time_max = 100
 time_current = 100
-time_drain = 0.1
+time_drain = 1.175
 
 active_text_box = ""
 text_boxes = {
@@ -312,20 +365,23 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
         panel = objective_panel_reversed
     renderScaled(panel, centerAnchor(256, 128, reversed, percent_y, (1 - reversed * 2) * (256 // 2) * offset_x))
 
-    renderScaled(o_type.renderedTitle, centerAnchor(128+64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, -44))
+    renderScaled(o_type.renderedTitle, centerAnchor(128 + 64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, -44))
     renderScaled(o_type.renderedDesc, centerAnchor(128 + 64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, 36))
 
     crystal_white = timeicon_white
     crystal_black = timeicon_black
+    filler = time_filler
 
     if objectives[index].crystalType == 0:
         renderScaled(crystal_red, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
         crystal_white = healthicon_white
         crystal_black = healthicon_black
+        filler = health_filler
     elif objectives[index].crystalType == 1:
         renderScaled(crystal_blue, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
         crystal_white = sanityicon_white
         crystal_black = sanityicon_black
+        filler = sanity_filler
     else:
         renderScaled(crystal_green, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
 
@@ -344,6 +400,9 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
     else:
         renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)), 32))
 
+    objectives[index].update()
+    fill = objectives[index].points / objectives[index].pointsToComplete # -192 / 2 * (1 - fill)
+    renderScaled(filler, centerAnchor(192 * fill, 32, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x -192 / 2 * (1 - fill)))
     renderScaled(objective_progress_bar, centerAnchor(192, 32, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x))
 def renderMainMenu():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
@@ -394,9 +453,22 @@ def renderAchievements():
 def renderGame():
     renderScaled(game_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
+
+    global health_current
+    global sanity_current
+    global time_current
+    global gameState
+
+    fill = health_current / health_max
+    renderScaled(health_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20 - 70))
     renderScaled(healthbar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70))
+    fill = sanity_current / sanity_max
+    renderScaled(sanity_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20))
     renderScaled(sanitybar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20))
+    fill = time_current / time_max
+    renderScaled(time_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20 + 70))
     renderScaled(timebar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 + 70))
+
     renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 - 70))
     renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20))
     renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 + 70))
@@ -411,6 +483,16 @@ def renderGame():
     renderObjectivePanel(0.25, 1, 3, True)
     renderObjectivePanel(0.5, 1, 4, True)
     renderObjectivePanel(0.75, 1, 5, True)
+
+    time_delta = timer.get_time()
+    health_current -= health_drain * (time_delta / 1000)
+    sanity_current -= sanity_drain * (time_delta / 1000)
+    time_current -= time_drain * (time_delta / 1000)
+    if health_current <= 0 or sanity_current <=0 or time_current <= 0:
+        gameState = "main_menu"
+        health_current = 100
+        sanity_current = 100
+        time_current = 100
 
 gameState = "main_menu"
 running = True
@@ -466,6 +548,8 @@ while running:
                     objectives[4].clicked()
                 elif centerAnchor(256, 128, 1, 0.75, (1 - 1 * 2) * (256 // 2)).collidepoint(mouse[0], mouse[1]):
                     objectives[5].clicked()
+                elif centerAnchor(100,100,1,0).collidepoint(mouse[0], mouse[1]):
+                    gameState = "main_menu"
 
         elif event.type == pygame.QUIT:
             running = False
