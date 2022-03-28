@@ -106,21 +106,21 @@ timer = pygame.time.Clock()
 #font_desc = pygame.font.SysFont('Arial', 16)VT323-Regular
 #font_menu_button = pygame.font.SysFont('Arial', 24)
 
-font = pygame.font.Font('fonts/VT323-Regular.ttf', 16, bold=True, italic=True, )
+font = pygame.font.Font('fonts/VT323-Regular.ttf', 16, bold=True, italic=True)
 font_title = pygame.font.Font('fonts/VT323-Regular.ttf', 24, bold=True)
 font_desc = pygame.font.Font('fonts/VT323-Regular.ttf', 16)
 font_menu_button = pygame.font.Font('fonts/VT323-Regular.ttf', 24)
 
-text_play = font_menu_button.render("Nowa Gra", True, (0, 0, 0))
-text_login = font_menu_button.render("Logowanie", True, (0, 0, 0))
-text_username = font_menu_button.render("Login: ", True, (0, 255, 0))
-text_password = font_menu_button.render("Hasło: ", True, (0, 255, 0))
-text_log_in = font_menu_button.render("Zaloguj się", True, (0, 0, 0))
-text_register2 = font_menu_button.render("Zarejestruj się", True, (0, 0, 0))
-text_register = font_menu_button.render("Zarejestruj się...", True, (0, 0, 0))
-text_achievements = font_menu_button.render("Osiągnięcia", True, (0, 0, 0))
-text_back = font_menu_button.render("Powrót", True, (0, 0, 0))
-text_exit = font_menu_button.render("Wyjście", True, (0, 0, 0))
+text_play = font_menu_button.render("Nowa Gra", False, (0, 0, 0))
+text_login = font_menu_button.render("Logowanie", False, (0, 0, 0))
+text_username = font_menu_button.render("Login: ", False, (0, 255, 0))
+text_password = font_menu_button.render("Hasło: ", False, (0, 255, 0))
+text_log_in = font_menu_button.render("Zaloguj się", False, (0, 0, 0))
+text_register2 = font_menu_button.render("Zarejestruj się", False, (0, 0, 0))
+text_register = font_menu_button.render("Zarejestruj się...", False, (0, 0, 0))
+text_achievements = font_menu_button.render("Osiągnięcia", False, (0, 0, 0))
+text_back = font_menu_button.render("Powrót", False, (0, 0, 0))
+text_exit = font_menu_button.render("Wyjście", False, (0, 0, 0))
 
 text_block_container = pygame.image.load("sprites/text_container.png")
 
@@ -282,8 +282,8 @@ objectiveTypes =\
 }
 
 for k in objectiveTypes:
-    objectiveTypes[k].renderedTitle = font_title.render(objectiveTypes[k].title, True, objective_title_color)
-    objectiveTypes[k].renderedDesc = font_desc.render(objectiveTypes[k].desc, True, objective_title_color)
+    objectiveTypes[k].renderedTitle = font_title.render(objectiveTypes[k].title, False, objective_title_color)
+    objectiveTypes[k].renderedDesc = font_desc.render(objectiveTypes[k].desc, False, objective_title_color)
 
 objectives =\
 [
@@ -355,7 +355,7 @@ def renderTextBox(index, rect):
                 else:
                     text += e.unicode
         pygame.event.post(e)
-    render = font.render(text, True, (255, 255, 255))
+    render = font.render(text, False, (255, 255, 255))
     screen.blit(render, (rect.x + 5, rect.y + 5))
     text_boxes[index] = text
 def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
@@ -416,10 +416,10 @@ def renderMainMenu():
     renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.70, 0, (128 // 2) * 1.62))
     renderScaled(text_exit, centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62))
     if not logged_username == "":
-        render = font.render("Zalogowano jako: " + logged_username, True, (0, 0, 0))
+        render = font.render("Zalogowano jako: " + logged_username, False, (0, 0, 0))
         screen.blit(render, centerAnchor(100,20,0,0,70,20))
     else:
-        render = font.render("Nie zalogowano", True, (0, 0, 0))
+        render = font.render("Nie zalogowano", False, (0, 0, 0))
         screen.blit(render, centerAnchor(100, 20, 0, 0, 70, 20))
 def renderLoginPanel():
     renderScaled(matrix.play(), centerAnchor(1920, 1080))
