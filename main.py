@@ -23,6 +23,7 @@ auth = firebase.auth()
 
 logged_username = ""
 
+
 def login(email, password):
     global logged_username
     global gameState
@@ -34,10 +35,11 @@ def login(email, password):
     except Exception as e:
         print(e)
 
+
 # Rejestracja
 
 
-def signUp(email,password):
+def signUp(email, password):
     global logged_username
     global gameState
     print("Rejestracja")
@@ -48,6 +50,7 @@ def signUp(email,password):
         gameState = "main_menu"
     except Exception as e:
         print(e)
+
 
 # Baza danych
 
@@ -70,7 +73,9 @@ def dbGetHighscore():
         "highscore").limit_to_last(100).get()
     for highscore in reversed(highscores.each()):
         print(highscore.val())
-#enums
+
+
+# enums
 HEALTH = 0
 SANITY = 1
 TIME = 2
@@ -94,17 +99,17 @@ objective_title_color = (56, 0, 0)
 # tutoriale: formatowanie textu, maski, sound effects, przejscia pomiedzy ekranami,
 
 pygame.init()
-screen = pygame.display.set_mode([1920, 1080],  pygame.FULLSCREEN)
+screen = pygame.display.set_mode([1920, 1080])
 pygame.display.set_caption("Clicker")
-#pygame.font.Font("freesansbold.ttf", 16)
+# pygame.font.Font("freesansbold.ttf", 16)
 pygame.font.Font("fonts/PressStart2P-Regular.ttf", 16)
 timer = pygame.time.Clock()
 
-#fonty
-#font = pygame.font.SysFont('Comic Sans MS, Arial, Times New Roman', 16, bold=True, italic=True, )
-#font_title = pygame.font.SysFont('Arial', 24, bold=True)
-#font_desc = pygame.font.SysFont('Arial', 16)VT323-Regular
-#font_menu_button = pygame.font.SysFont('Arial', 24)
+# fonty
+# font = pygame.font.SysFont('Comic Sans MS, Arial, Times New Roman', 16, bold=True, italic=True, )
+# font_title = pygame.font.SysFont('Arial', 24, bold=True)
+# font_desc = pygame.font.SysFont('Arial', 16)VT323-Regular
+# font_menu_button = pygame.font.SysFont('Arial', 24)
 
 font = pygame.font.Font('fonts/VT323-Regular.ttf', 16, bold=True, italic=True)
 font_title = pygame.font.Font('fonts/VT323-Regular.ttf', 24, bold=True)
@@ -124,12 +129,24 @@ text_exit = font_menu_button.render("Wyjście", False, (0, 0, 0))
 
 text_block_container = pygame.image.load("sprites/text_container.png")
 
-#sprites - main menu
+# sprites - main menu
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
 title = pygame.image.load("sprites/title.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
-login_panel_panel = pygame.image.load("sprites/login_panel_panel.png")
-#sprites - game
+login_button = pygame.image.load("sprites/login_button.png")
+new_game_button = pygame.image.load("sprites/new_game_button.png")
+achievements_button = pygame.image.load("sprites/achievements_button.png")
+back_button = pygame.image.load("sprites/back_button.png")
+register_button = pygame.image.load("sprites/register_button.png")
+exit_button = pygame.image.load("sprites/exit_button.png")
+login_button_p = pygame.image.load("sprites/login_button_p.png")
+new_game_button_p = pygame.image.load("sprites/new_game_button_p.png")
+achievements_button_p = pygame.image.load("sprites/achievements_button_p.png")
+back_button_p = pygame.image.load("sprites/back_button_p.png")
+register_button_p = pygame.image.load("sprites/register_button_p.png")
+exit_button_p = pygame.image.load("sprites/exit_button_p.png")
+login_panel = pygame.image.load("sprites/login_panel.png")
+# sprites - game
 game_background = pygame.image.load("sprites/game_background.png")
 board = pygame.image.load("sprites/board.png")
 
@@ -152,7 +169,7 @@ timeicon_white = pygame.image.load("sprites/time_icon_white.png")
 timeicon_black = pygame.image.load("sprites/time_icon_black.png")
 
 statbar_mask = pygame.Surface(pygame.image.load("sprites/stat_bar_mask.png").get_size()).convert_alpha()
-statbar_mask.fill((255,255,255))
+statbar_mask.fill((255, 255, 255))
 
 objective_panel = pygame.image.load("sprites/objective_panel.png")
 objective_panel_reversed = pygame.image.load("sprites/objective_panel_reversed.png")
@@ -169,12 +186,13 @@ coffee = pygame.image.load("sprites/power_ups/coffee.png")
 dumbell = pygame.image.load("sprites/power_ups/dumbell.png")
 energy_drink = pygame.image.load("sprites/power_ups/energy_drink.png")
 
-#audio
+# audio
 clickSound = pygame.mixer.Sound('audio/click.wav')
 winclickSound = pygame.mixer.Sound('audio/winclick.wav')
 midclickSound = pygame.mixer.Sound('audio/midclick.wav')
 
-#animations
+
+# animations
 class Animation:
     def __init__(self, name, frame_count, fps):
         self.timer = 0
@@ -183,6 +201,7 @@ class Animation:
         self.frames = []
         for i in range(1, frame_count + 1):
             self.frames.append(pygame.image.load("animations/" + name + "/" + name + str(i) + ".png"))
+
     def play(self):
         self.timer += timer.get_time()
         if self.timer >= self.next:
@@ -191,7 +210,11 @@ class Animation:
             if self.index >= len(self.frames):
                 self.index = 0
         return self.frames[self.index]
+
+
 matrix = Animation("matrix", 22, 12)
+
+
 class Objective:
     def __init__(self):
         self.objectiveType = ""
@@ -202,6 +225,7 @@ class Objective:
         self.isCompleted = False
         self.timer = 0
         self.drain_cooldown = 0
+
     def setType(self, type_name):
         o_type = objectiveTypes[type_name]
         self.objectiveType = type_name
@@ -220,8 +244,10 @@ class Objective:
         self.addStat = o_type.statImpact
         self.isCompleted = False
         self.timer = self.drain_cooldown
+
     def setRandom(self):
         self.setType(random.choice(list(objectiveTypes.keys())))
+
     def update(self):
         if self.timer < 0:
             self.points -= timer.get_time() / 1000
@@ -259,6 +285,7 @@ class Objective:
         else:
             clickSound.play()
 
+
 class ObjectiveType:
     def __init__(self, title, desc, statType, statImpact):
         self.title = title
@@ -268,28 +295,29 @@ class ObjectiveType:
         self.renderedTitle = False
         self.renderedDesc = False
 
-objectiveTypes =\
-{
-    "walk": ObjectiveType("Spacer", "Czas na ruch", HEALTH, LOW),
-    "healthy_food": ObjectiveType("Zdrowy Posiłek", "Masz ochotę na zdrowe jedzonko!", HEALTH, MEDIUM),
-    "gym": ObjectiveType("Siłownia", "Przypakuj na siłce!", HEALTH, HIGH),
-    "music": ObjectiveType("Muzyka", "Muzyka łagodzi obyczaje", SANITY, LOW),
-    "learn": ObjectiveType("Nauka", "Pora zakuwać", SANITY, MEDIUM),
-    "party": ObjectiveType("Impreza!", "Czas na małą imprezkę!", SANITY, HIGH),
-    "no_break": ObjectiveType("Bez Przerwy", "Na co komu odpoczynek?", TIME, LOW),
-    "speed_boots": ObjectiveType("Szybkie buty", "Szybkość jest wszystkim!", TIME, MEDIUM),
-    "multitasking": ObjectiveType("Multitasking", "Wiele spraw na raz", TIME, HIGH)
-}
+
+objectiveTypes = \
+    {
+        "walk": ObjectiveType("Spacer", "Czas na ruch", HEALTH, LOW),
+        "healthy_food": ObjectiveType("Zdrowy Posiłek", "Masz ochotę na zdrowe jedzonko!", HEALTH, MEDIUM),
+        "gym": ObjectiveType("Siłownia", "Przypakuj na siłce!", HEALTH, HIGH),
+        "music": ObjectiveType("Muzyka", "Muzyka łagodzi obyczaje", SANITY, LOW),
+        "learn": ObjectiveType("Nauka", "Pora zakuwać", SANITY, MEDIUM),
+        "party": ObjectiveType("Impreza!", "Czas na małą imprezkę!", SANITY, HIGH),
+        "no_break": ObjectiveType("Bez Przerwy", "Na co komu odpoczynek?", TIME, LOW),
+        "speed_boots": ObjectiveType("Szybkie buty", "Szybkość jest wszystkim!", TIME, MEDIUM),
+        "multitasking": ObjectiveType("Multitasking", "Wiele spraw na raz", TIME, HIGH)
+    }
 
 for k in objectiveTypes:
     objectiveTypes[k].renderedTitle = font_title.render(objectiveTypes[k].title, False, objective_title_color)
     objectiveTypes[k].renderedDesc = font_desc.render(objectiveTypes[k].desc, False, objective_title_color)
 
-objectives =\
-[
-    Objective(), Objective(), Objective(),
-    Objective(), Objective(), Objective()
-]
+objectives = \
+    [
+        Objective(), Objective(), Objective(),
+        Objective(), Objective(), Objective()
+    ]
 
 """objectives[0].setType("walk")
 objectives[1].setType("learn")
@@ -331,9 +359,13 @@ def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
     return pygame.Rect(screen.get_width() * percent_x - width / 2 * x_scale + offset_x * x_scale,
                        screen.get_height() * percent_y - height / 2 * y_scale + offset_y * y_scale,
                        width * x_scale, height * y_scale)
+
+
 def renderScaled(sprite, rect):
     scaled = pygame.transform.scale(sprite, (rect.w, rect.h))
     screen.blit(scaled, rect)
+
+
 def renderTextBox(index, rect):
     global active_text_box
     text = text_boxes[index]
@@ -358,6 +390,58 @@ def renderTextBox(index, rect):
     render = font.render(text, False, (255, 255, 255))
     screen.blit(render, (rect.x + 5, rect.y + 5))
     text_boxes[index] = text
+
+
+class Button:
+    def __init__(self, sprite, sprite_p, width, height, percent_x, percent_y, offset_x, offset_y):
+        self.pressed = False
+
+        self.offset_y = offset_y
+        self.offset_x = offset_x
+        self.percent_y = percent_y
+        self.percent_x = percent_x
+        self.height = height
+        self.width = width
+        self.sprite = sprite
+        self.sprite_p = sprite_p
+        self.sprite_t = self.sprite
+        self.centerAnchor = centerAnchor(self.width, self.height, self.percent_x, self.percent_y, self.offset_x,
+                                         self.offset_y)
+
+    def draw(self):
+        renderScaled(self.sprite_t, self.centerAnchor)
+        self.check_click()
+
+    def check_click(self):
+        mouse_pos = pygame.mouse.get_pos()
+        if self.centerAnchor.collidepoint(mouse_pos):
+            if pygame.mouse.get_pressed()[0]:
+                self.sprite_t = self.sprite_p
+                self.pressed = True
+            else:
+                if self.pressed == True:
+                    print('click')
+                    self.pressed = False
+                    self.sprite_t = self.sprite
+        else:
+            self.sprite_t = self.sprite
+
+
+# main menu
+new_game_b = Button(new_game_button, new_game_button_p, 256, 80, 0.5, 0.25, 0, 128 // 2)
+login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 // 2)
+exit_b = Button(exit_button, exit_button_p, 221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62)
+achievements_b = Button(achievements_button, achievements_button_p, 256, 80, 0.5, 0.55, 0, 128 // 2)
+# login
+login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30)
+login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2)
+register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2)
+
+# register
+register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30)
+register_back_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2)
+
+
 def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
     panel = objective_panel
     o_type = objectiveTypes[objectives[index].objectiveType]
@@ -365,91 +449,109 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
         panel = objective_panel_reversed
     renderScaled(panel, centerAnchor(256, 128, reversed, percent_y, (1 - reversed * 2) * (256 // 2) * offset_x))
 
-    renderScaled(o_type.renderedTitle, centerAnchor(128 + 64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, -44))
-    renderScaled(o_type.renderedDesc, centerAnchor(128 + 64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, 36))
+    renderScaled(o_type.renderedTitle,
+                 centerAnchor(128 + 64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, -44))
+    renderScaled(o_type.renderedDesc,
+                 centerAnchor(128 + 64, 48, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x, 36))
 
     crystal_white = timeicon_white
     crystal_black = timeicon_black
     filler = time_filler
 
     if objectives[index].crystalType == 0:
-        renderScaled(crystal_red, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
+        renderScaled(crystal_red, centerAnchor(32, 32, reversed, percent_y,
+                                               (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
         crystal_white = healthicon_white
         crystal_black = healthicon_black
         filler = health_filler
     elif objectives[index].crystalType == 1:
-        renderScaled(crystal_blue, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
+        renderScaled(crystal_blue, centerAnchor(32, 32, reversed, percent_y,
+                                                (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
         crystal_white = sanityicon_white
         crystal_black = sanityicon_black
         filler = sanity_filler
     else:
-        renderScaled(crystal_green, centerAnchor(32, 32, reversed, percent_y, (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
+        renderScaled(crystal_green, centerAnchor(32, 32, reversed, percent_y,
+                                                 (1 - reversed * 2) * (256 - (256 // 2) * (1 - offset_x))))
 
     if o_type.statImpact == HIGH:
-        renderScaled(crystal_white, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)), -32))
+        renderScaled(crystal_white,
+                     centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)),
+                                  -32))
     else:
-        renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)), -32))
+        renderScaled(crystal_black,
+                     centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)),
+                                  -32))
 
     if o_type.statImpact >= MEDIUM:
-        renderScaled(crystal_white, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (288 - (256 // 2) * (1 - offset_x))))
+        renderScaled(crystal_white, centerAnchor(16, 16, reversed, percent_y,
+                                                 (1 - reversed * 2) * (288 - (256 // 2) * (1 - offset_x))))
     else:
-        renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (288 - (256 // 2) * (1 - offset_x))))
+        renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y,
+                                                 (1 - reversed * 2) * (288 - (256 // 2) * (1 - offset_x))))
 
     if o_type.statImpact >= LOW:
-        renderScaled(crystal_white, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)), 32))
+        renderScaled(crystal_white,
+                     centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)),
+                                  32))
     else:
-        renderScaled(crystal_black, centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)), 32))
+        renderScaled(crystal_black,
+                     centerAnchor(16, 16, reversed, percent_y, (1 - reversed * 2) * (272 - (256 // 2) * (1 - offset_x)),
+                                  32))
 
     objectives[index].update()
-    fill = objectives[index].points / objectives[index].pointsToComplete # -192 / 2 * (1 - fill)
-    renderScaled(filler, centerAnchor(192 * fill, 32, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x -192 / 2 * (1 - fill)))
-    renderScaled(objective_progress_bar, centerAnchor(192, 32, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x))
+    fill = objectives[index].points / objectives[index].pointsToComplete  # -192 / 2 * (1 - fill)
+    renderScaled(filler, centerAnchor(192 * fill, 32, reversed, percent_y,
+                                      (1 - reversed * 2) * (256 // 2 - 16) * offset_x - 192 / 2 * (1 - fill)))
+    renderScaled(objective_progress_bar,
+                 centerAnchor(192, 32, reversed, percent_y, (1 - reversed * 2) * (256 // 2 - 16) * offset_x))
+
+
 def renderMainMenu():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
-    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.25, 0, 128 // 2))
-    renderScaled(text_play, centerAnchor(221, 70, 0.5, 0.25, 0, 128 // 2))
-    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2))
-    renderScaled(text_login, centerAnchor(221, 70, 0.5, 0.40, 0, 128 // 2))
-    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.55, 0, 128 // 2))
-    renderScaled(text_achievements, centerAnchor(221, 70, 0.5, 0.55, 0, 128 // 2))
-    renderScaled(menu_button, centerAnchor(256, 80, 0.5, 0.70, 0, (128 // 2) * 1.62))
-    renderScaled(text_exit, centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62))
+    new_game_b.draw()
+    login_enter_b.draw()
+    exit_b.draw()
+    achievements_b.draw()
     if not logged_username == "":
         render = font.render("Zalogowano jako: " + logged_username, False, (0, 0, 0))
-        screen.blit(render, centerAnchor(100,20,0,0,70,20))
+        screen.blit(render, centerAnchor(100, 20, 0, 0, 70, 20))
     else:
         render = font.render("Nie zalogowano", False, (0, 0, 0))
         screen.blit(render, centerAnchor(100, 20, 0, 0, 70, 20))
+
+
 def renderLoginPanel():
-    renderScaled(matrix.play(), centerAnchor(1920, 1080))
-    renderScaled(login_panel_panel, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
+    renderScaled(login_panel, centerAnchor(576, 768, 0.5, 0.3375, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
     renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
     renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
     renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
-    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
-    renderScaled(text_log_in, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
-    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2))
-    renderScaled(text_register, centerAnchor(157, 60, 0.5, 0.4, -136, 128 // 2))
-    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2))
-    renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 136, 128 // 2))
-    #login(text_boxes['username'],text_boxes['password'])
+    login_b.draw()
+    login_back_b.draw()
+    register_enter_b.draw()
+
 
 def renderRegisterPanel():
-    renderScaled(matrix.play(), centerAnchor(1920, 1080))
-    renderScaled(login_panel_panel, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
+    renderScaled(login_panel, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
     renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
     renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
     renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
-    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
-    renderScaled(text_register2, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
-    renderScaled(menu_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
-    renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 0, 128 // 2))
-    #signUp(text_boxes['username'], text_boxes['password'])
+    register_b.draw()
+    register_back_b.draw()
+    # renderScaled(register_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
+    # renderScaled(text_register2, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
+    renderScaled(back_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
+    # renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 0, 128 // 2))
+    # signUp(text_boxes['username'], text_boxes['password'])
+
+
 def renderAchievements():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
+
+
 def renderGame():
     renderScaled(game_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
@@ -488,11 +590,12 @@ def renderGame():
     health_current -= health_drain * (time_delta / 1000)
     sanity_current -= sanity_drain * (time_delta / 1000)
     time_current -= time_drain * (time_delta / 1000)
-    if health_current <= 0 or sanity_current <=0 or time_current <= 0:
+    if health_current <= 0 or sanity_current <= 0 or time_current <= 0:
         gameState = "main_menu"
         health_current = 100
         sanity_current = 100
         time_current = 100
+
 
 gameState = "main_menu"
 running = True
@@ -504,15 +607,15 @@ while running:
         renderLoginPanel()
     elif gameState == "register_panel":
         renderRegisterPanel()
-    #elif gamestate == "achievements":
-        #renderAchievements()
+    # elif gamestate == "achievements":
+    # renderAchievements()
     elif gameState == "game":
         renderGame()
 
     pygame.display.flip()
 
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONUP:
             mouse = pygame.mouse.get_pos()
             if gameState == "main_menu":
                 if centerAnchor(256, 80, 0.5, 0.25, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
@@ -532,9 +635,33 @@ while running:
                     gameState = "register_panel"
             elif gameState == "register_panel":
                 if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
-                    gameState = "main_menu"
+                    gameState = "login_panel"
                 elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
                     signUp(text_boxes['username'], text_boxes['password'])
+            #nie dziala
+            # print(login_enter_b.pressed)
+            # if gameState == "main_menu":
+            #     if new_game_b.pressed:
+            #         gameState = "game"
+            #     elif login_enter_b.pressed:
+            #         login_enter_b.pressed = False
+            #         gameState = "login_panel"
+            #     # elif achievements_b.pressed:
+            #     # gameState = "achievements"
+            #     elif exit_b.pressed:
+            #         running = False
+            # elif gameState == "login_panel":
+            #     if login_back_b.pressed:
+            #         gameState = "main_menu"
+            #     elif login_b.pressed:
+            #         login(text_boxes['username'], text_boxes['password'])
+            #     elif register_enter_b.pressed:
+            #         gameState = "register_panel"
+            # elif gameState == "register_panel":
+            #     if register_back_b.pressed:
+            #         gameState = "login_panel"
+            #     elif register_b.pressed:
+            #         signUp(text_boxes['username'], text_boxes['password'])
             elif gameState == "game":
                 if centerAnchor(256, 128, 0, 0.25, (1 - 0 * 2) * (256 // 2) * 1).collidepoint(mouse[0], mouse[1]):
                     objectives[0].clicked()
@@ -548,7 +675,7 @@ while running:
                     objectives[4].clicked()
                 elif centerAnchor(256, 128, 1, 0.75, (1 - 1 * 2) * (256 // 2)).collidepoint(mouse[0], mouse[1]):
                     objectives[5].clicked()
-                elif centerAnchor(100,100,1,0).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
 
         elif event.type == pygame.QUIT:
