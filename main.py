@@ -2,6 +2,7 @@ import pygame
 import pyrebase
 import re
 import random
+import json
 import sys, traceback
 
 firebaseConfig = {
@@ -28,16 +29,29 @@ logged_username = ""
 def login(email, password):
     global logged_username
     global gameState
-    global annoucement
+    global announcement
     try:
         auth.sign_in_with_email_and_password(email, password)
         print("Pomyslny login")
         logged_username = email
         gameState = "main_menu"
     except Exception as e:
-        print(e)
-        annoucement = "Niepoprawny login!"
-
+        error_json = e.args[1]
+        error = json.loads(error_json)['error']['message']
+        print(error)
+        # INVALID_PASSWORD
+        # INVALID_EMAIL
+        # EMAIL_NOT_FOUND
+        # MISSING_PASSWORD
+        if error == "MISSING_PASSWORD":
+            announcement = "Nie wpisano hasła!"
+        elif error == "INVALID_PASSWORD" or error == "INVALID_EMAIL":
+            announcement = "Niepoprawny login lub hasło!"
+        elif error == "EMAIL_NOT_FOUND":
+            announcement = "E-mail nie istnieje!"
+        else:
+            announcement = "Niepoprawny login!"
+            print(error)
 
 # Rejestracja
 
@@ -45,7 +59,7 @@ def login(email, password):
 def signUp(email, password):
     global logged_username
     global gameState
-    global annoucement
+    global announcement
     print("Rejestracja")
     try:
         auth.create_user_with_email_and_password(email, password)
@@ -53,8 +67,22 @@ def signUp(email, password):
         logged_username = email
         gameState = "main_menu"
     except Exception as e:
-        print(e)
-        annoucement = "Niepoprawny login!"
+        error_json = e.args[1]
+        error = json.loads(error_json)['error']['message']
+        print(error)
+        # WEAK_PASSWORD : Password should be at least 6 characters
+        # EMAIL_EXISTS
+        if error == "EMAIL_EXISTS":
+            announcement = "E-mail jest już użyty!"
+        elif error == "MISSING_PASSWORD":
+            announcement = "Nie wpisano hasła!"
+        elif error == "INVALID_PASSWORD" or error == "INVALID_EMAIL":
+            announcement = "Niepoprawny login lub hasło!"
+        elif error == "WEAK_PASSWORD : Password should be at least 6 characters":
+            announcement = "Hasło powinno zawierać przynajmniej 6 znaków!"
+        else:
+            announcement = "Niepoprawny login!"
+            print(error)
 
 
 # Baza danych
@@ -104,7 +132,8 @@ objective_title_color = (56, 0, 0)
 # tutoriale: formatowanie textu, maski, sound effects, przejscia pomiedzy ekranami,
 
 pygame.init()
-screen = pygame.display.set_mode([1920, 1080], pygame.FULLSCREEN)
+screen = pygame.display.set_mode([1920, 1080])
+# screen = pygame.display.set_mode([1920, 1080], pygame.FULLSCREEN)
 pygame.display.set_caption("Clicker")
 # pygame.font.Font("freesansbold.ttf", 16)
 pygame.font.Font("fonts/PressStart2P-Regular.ttf", 16)
@@ -456,6 +485,7 @@ register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4,
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30)
 register_back_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2)
 
+
 def renderObjectivePaper(index=0):
     o_type = objectiveTypes[objectives[index].objectiveType]
     offset_x = 0
@@ -510,6 +540,7 @@ def renderObjectivePaper(index=0):
         renderScaled(crystal_white, centerAnchor(16, 16, 0.5, 1, offset_x - 32, -125))
     else:
         renderScaled(crystal_black, centerAnchor(16, 16, 0.5, 1, offset_x - 32, -125))
+
 
 def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
     panel = objective_panel
@@ -590,7 +621,10 @@ def renderMainMenu():
         render = font.render("Nie zalogowano", False, (0, 0, 0))
         screen.blit(render, centerAnchor(100, 20, 0, 0, 70, 20))
 
-annoucement = ""
+
+announcement = ""
+
+
 def renderLoginPanel():
     renderScaled(login_panel, centerAnchor(576, 768, 0.5, 0.3375, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
@@ -600,10 +634,9 @@ def renderLoginPanel():
     login_b.draw()
     login_back_b.draw()
     register_enter_b.draw()
-    if annoucement != "":
-        a = font.render(annoucement, False, (200, 0, 0))
+    if announcement != "":
+        a = font.render(announcement, False, (200, 0, 0))
         renderScaled(a, centerAnchor(250, 50, 0.5, 0, 0, 128 // 2 + 600))
-
 
 
 def renderRegisterPanel():
@@ -619,8 +652,8 @@ def renderRegisterPanel():
     renderScaled(back_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
     # renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 0, 128 // 2))
     # signUp(text_boxes['username'], text_boxes['password'])
-    if annoucement != "":
-        a = font.render(annoucement, False, (200, 0, 0))
+    if announcement != "":
+        a = font.render(announcement, False, (200, 0, 0))
         renderScaled(a, centerAnchor(250, 50, 0.5, 0, 0, 128 // 2 + 600))
 
 
@@ -693,12 +726,12 @@ while running:
             if gameState == "main_menu":
                 if centerAnchor(256, 80, 0.5, 0.25, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "game"
-                    annoucement = ""
+                    announcement = ""
                 elif centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
-                    annoucement = ""
-                #elif centerAnchor(256, 80, 0.5, 0.55, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
-                    #gameState = "achievements"
+                    announcement = ""
+                # elif centerAnchor(256, 80, 0.5, 0.55, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                # gameState = "achievements"
                 elif centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62).collidepoint(mouse[0], mouse[1]):
                     running = False
             elif gameState == "login_panel":
@@ -708,14 +741,14 @@ while running:
                     login(text_boxes['username'], text_boxes['password'])
                 elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "register_panel"
-                    annoucement = ""
+                    announcement = ""
             elif gameState == "register_panel":
                 if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
-                    annoucement = ""
+                    announcement = ""
                 elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
                     signUp(text_boxes['username'], text_boxes['password'])
-            #nie dziala
+            # nie dziala
             # print(login_enter_b.pressed)
             # if gameState == "main_menu":
             #     if new_game_b.pressed:
@@ -740,11 +773,13 @@ while running:
             #     elif register_b.pressed:
             #         signUp(text_boxes['username'], text_boxes['password'])
             elif gameState == "game":
-                if centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, -82 * 3.5 - 50, -102 * 1.75).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, -82 * 3.5 - 50, -102 * 1.75).collidepoint(mouse[0],
+                                                                                                       mouse[1]):
                     objectives[0].clicked()
                 elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 0, -102 * 1.75).collidepoint(mouse[0], mouse[1]):
                     objectives[1].clicked()
-                elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 82 * 3.5 + 50, -102 * 1.75).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 82 * 3.5 + 50, -102 * 1.75).collidepoint(mouse[0],
+                                                                                                        mouse[1]):
                     objectives[2].clicked()
                 elif centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
