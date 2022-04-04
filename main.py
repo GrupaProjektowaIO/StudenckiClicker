@@ -388,13 +388,20 @@ def renderTextBox(index, rect):
             else:
                 if active_text_box == index:
                     active_text_box = ""
-        elif e.type == pygame.KEYDOWN:
-            if active_text_box == index:
-                if e.key == pygame.K_BACKSPACE:
-                    text = text[:-1]
-                else:
-                    text += e.unicode
+        #elif e.type == pygame.KEYDOWN:
+            #if active_text_box == index:
+                #if e.key == pygame.K_BACKSPACE:
+                    #text = text[:-1]
+                #else:
+                    #text += e.unicode
         pygame.event.post(e)
+    keys = pygame.key.get_pressed()
+    if active_text_box == index:
+        if keys[pygame.K_BACKSPACE]:
+            text = text[:-1]
+        else:
+            print("lol")
+
     render = font.render(text, False, (0, 0, 0))
     screen.blit(render, (rect.x + 5, rect.y + 5))
     text_boxes[index] = text
