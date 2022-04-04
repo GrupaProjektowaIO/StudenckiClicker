@@ -132,8 +132,8 @@ objective_title_color = (56, 0, 0)
 # tutoriale: formatowanie textu, maski, sound effects, przejscia pomiedzy ekranami,
 
 pygame.init()
-screen = pygame.display.set_mode([1920, 1080])
-# screen = pygame.display.set_mode([1920, 1080], pygame.FULLSCREEN)
+#screen = pygame.display.set_mode([1920, 1080])
+screen = pygame.display.set_mode([1920, 1080], pygame.FULLSCREEN)
 pygame.display.set_caption("Clicker")
 # pygame.font.Font("freesansbold.ttf", 16)
 pygame.font.Font("fonts/PressStart2P-Regular.ttf", 16)
@@ -402,9 +402,12 @@ def renderScaled(sprite, rect):
     scaled = pygame.transform.scale(sprite, (rect.w, rect.h))
     screen.blit(scaled, rect)
 
-
+text_timer = 0
+last_key = 0
 def renderTextBox(index, rect):
     global active_text_box
+    global text_timer
+    global last_key
     text = text_boxes[index]
     renderScaled(text_block_container, rect)
     for e in pygame.event.get():
@@ -424,13 +427,40 @@ def renderTextBox(index, rect):
                 #else:
                     #text += e.unicode
         pygame.event.post(e)
-    keys = pygame.key.get_pressed()
+    ks = pygame.key.get_pressed()
     if active_text_box == index:
-        if keys[pygame.K_BACKSPACE]:
-            text = text[:-1]
-        else:
-            print("lol")
-
+        #for k in range(97, 123):
+        for k in range(0, 127):
+            if ks[k]:
+                if last_key != k:
+                    if ks[pygame.K_BACKSPACE]:
+                        text = text[:-1]
+                    else:
+                        if ks[pygame.K_LSHIFT]:
+                            if k == 50:
+                                text += "@"
+                            else:
+                                text += chr(k - 32)
+                        else:
+                            text += chr(k)
+                    text_timer = 1000
+                    last_key = k
+                elif text_timer < 0:
+                    if ks[pygame.K_BACKSPACE]:
+                        text = text[:-1]
+                    else:
+                        if ks[pygame.K_LSHIFT]:
+                            if k == 50:
+                                text += "@"
+                            else:
+                                text += chr(k - 32)
+                        else:
+                            text += chr(k)
+                    text_timer = 250
+                    last_key = k
+                break
+    if text_timer >= 0:
+        text_timer -= timer.get_time()
     render = font.render(text, False, (0, 0, 0))
     screen.blit(render, (rect.x + 5, rect.y + 5))
     text_boxes[index] = text
