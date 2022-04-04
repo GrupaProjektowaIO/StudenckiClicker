@@ -165,6 +165,8 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
+sun = pygame.image.load("sprites/sun.png")
+cloud = pygame.image.load("sprites/cloud.png")
 title = pygame.image.load("sprites/title.png")
 wall_clock = pygame.image.load("sprites/wall_clock.png")
 lamp = pygame.image.load("sprites/lamp.png")
@@ -609,6 +611,8 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
 
 def renderMainMenu():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
+    renderScaled(sun, centerAnchor(48*4, 48*4, 0.1, 0.2))
+    renderScaled(cloud, centerAnchor(96*4, 48*4, 0.75, 0.2))
     renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
     new_game_b.draw()
     login_enter_b.draw()
