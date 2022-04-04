@@ -168,8 +168,6 @@ main_menu_background = pygame.image.load("sprites/main_menu_background.png")
 sun = pygame.image.load("sprites/sun.png")
 cloud = pygame.image.load("sprites/cloud.png")
 title = pygame.image.load("sprites/title.png")
-wall_clock = pygame.image.load("sprites/wall_clock.png")
-lamp = pygame.image.load("sprites/lamp.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
 login_button = pygame.image.load("sprites/login_button.png")
 new_game_button = pygame.image.load("sprites/new_game_button.png")
@@ -668,8 +666,6 @@ def renderAchievements():
 def renderGame():
     renderScaled(game_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
-    renderScaled(wall_clock, centerAnchor(192, 192, 0.25, 0.1))
-    renderScaled(lamp, centerAnchor(192, 192, 0.35, 0.4))
     global health_current
     global sanity_current
     global time_current
