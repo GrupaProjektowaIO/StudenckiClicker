@@ -165,9 +165,9 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
+sun = pygame.image.load("sprites/sun.png")
+cloud = pygame.image.load("sprites/cloud.png")
 title = pygame.image.load("sprites/title.png")
-wall_clock = pygame.image.load("sprites/wall_clock.png")
-lamp = pygame.image.load("sprites/lamp.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
 login_button = pygame.image.load("sprites/login_button.png")
 new_game_button = pygame.image.load("sprites/new_game_button.png")
@@ -639,6 +639,8 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
 
 def renderMainMenu():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
+    renderScaled(sun, centerAnchor(48*4, 48*4, 0.1, 0.2))
+    renderScaled(cloud, centerAnchor(96*4, 48*4, 0.75, 0.2))
     renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
     new_game_b.draw()
     login_enter_b.draw()
@@ -694,8 +696,6 @@ def renderAchievements():
 def renderGame():
     renderScaled(game_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
-    renderScaled(wall_clock, centerAnchor(192, 192, 0.25, 0.1))
-    renderScaled(lamp, centerAnchor(192, 192, 0.35, 0.4))
     global health_current
     global sanity_current
     global time_current
