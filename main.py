@@ -165,7 +165,6 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
-sun = pygame.image.load("sprites/sun.png")
 title = pygame.image.load("sprites/title.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
 login_button = pygame.image.load("sprites/login_button.png")
@@ -195,13 +194,10 @@ healthicon = pygame.image.load("sprites/health_icon.png")
 sanityicon = pygame.image.load("sprites/sanity_icon.png")
 timeicon = pygame.image.load("sprites/time_icon.png")
 deathicon = pygame.image.load("sprites/death_icon.png")
+diffuculty_progress_bar_easy = pygame.image.load('sprites/difficulty_bar_easy.png')
+diffuculty_progress_bar_medium = pygame.image.load('sprites/difficulty_bar_medium.png')
+diffuculty_progress_bar_hard = pygame.image.load('sprites/difficulty_bar_hard.png')
 
-healthicon_white = pygame.image.load("sprites/health_icon_white.png")
-healthicon_black = pygame.image.load("sprites/health_icon_black.png")
-sanityicon_white = pygame.image.load("sprites/sanity_icon_white.png")
-sanityicon_black = pygame.image.load("sprites/sanity_icon_black.png")
-timeicon_white = pygame.image.load("sprites/time_icon_white.png")
-timeicon_black = pygame.image.load("sprites/time_icon_black.png")
 
 statbar_mask = pygame.Surface(pygame.image.load("sprites/stat_bar_mask.png").get_size()).convert_alpha()
 statbar_mask.fill((255, 255, 255))
@@ -249,6 +245,8 @@ class Animation:
 
 
 cloud = Animation("cloud", 6, 2.5)
+sun = Animation("Sun", 2, 3)
+smoke = Animation("Smoke", 4, 2)
 
 
 class Objective:
@@ -528,47 +526,36 @@ def renderObjectivePaper(index=0):
     renderScaled(objective_paper, centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, offset_x, -102 * 1.75))
 
     renderScaled(o_type.renderedTitle,
-                 centerAnchor(128 + 64, 48, 0.5, 1, offset_x, -102 * 1.75 - 150))
-    renderScaled(o_type.renderedDesc,
-                 centerAnchor(128 + 64 + 32, 48, 0.5, 1, offset_x, -102 * 1.75 - 50))
+                 centerAnchor(128 + 64, 48, 0.5, 1, offset_x, -102 * 1.75 - 150 + 35))
+    #renderScaled(o_type.renderedDesc,
+                 #centerAnchor(128 + 64 + 32, 48, 0.5, 1, offset_x, -102 * 1.75 - 50))
 
-    crystal_white = timeicon_white
-    crystal_black = timeicon_black
+
     filler = time_filler
 
     if objectives[index].crystalType == 0:
-        renderScaled(crystal_red, centerAnchor(32, 32, 0.5, 1, offset_x, -170))
-        crystal_white = healthicon_white
-        crystal_black = healthicon_black
+        renderScaled(crystal_red, centerAnchor(32, 32, 0.5, 1, offset_x, -170 - 12))
         filler = health_filler
     elif objectives[index].crystalType == 1:
-        renderScaled(crystal_blue, centerAnchor(32, 32, 0.5, 1, offset_x, -170))
-        crystal_white = sanityicon_white
-        crystal_black = sanityicon_black
+        renderScaled(crystal_blue, centerAnchor(32, 32, 0.5, 1, offset_x, -170 - 12))
+
         filler = sanity_filler
     else:
-        renderScaled(crystal_green, centerAnchor(32, 32, 0.5, 1, offset_x, -170))
+        renderScaled(crystal_green, centerAnchor(32, 32, 0.5, 1, offset_x, -170 - 12))
 
     objectives[index].update()
     fill = objectives[index].points / objectives[index].pointsToComplete
     renderScaled(filler, centerAnchor(192 * fill, 32, 0.5, 1,
-                                      -192 / 2 + (192 * fill / 2) + offset_x, -275))
-    renderScaled(objective_progress_bar, centerAnchor(192, 32, 0.5, 1, offset_x, -275))
+                                      -192 / 2 + (192 * fill / 2) + offset_x, -275 + 35))
+    renderScaled(objective_progress_bar, centerAnchor(192, 32, 0.5, 1, offset_x, -275 + 35))
 
     if o_type.statImpact == HIGH:
-        renderScaled(crystal_white, centerAnchor(16, 16, 0.5, 1, offset_x + 32, -125))
+        renderScaled(diffuculty_progress_bar_hard, centerAnchor(96*2.5, 8*4, 0.5, 1, offset_x, -125))
+    elif o_type.statImpact == MEDIUM:
+        renderScaled(diffuculty_progress_bar_medium, centerAnchor(96*2.5, 8*4, 0.5, 1, offset_x, -125))
     else:
-        renderScaled(crystal_black, centerAnchor(16, 16, 0.5, 1, offset_x + 32, -125))
+        renderScaled(diffuculty_progress_bar_easy, centerAnchor(96*2.5, 8*4, 0.5, 1, offset_x, -125))
 
-    if o_type.statImpact >= MEDIUM:
-        renderScaled(crystal_white, centerAnchor(16, 16, 0.5, 1, offset_x, -125))
-    else:
-        renderScaled(crystal_black, centerAnchor(16, 16, 0.5, 1, offset_x, -125))
-
-    if o_type.statImpact >= LOW:
-        renderScaled(crystal_white, centerAnchor(16, 16, 0.5, 1, offset_x - 32, -125))
-    else:
-        renderScaled(crystal_black, centerAnchor(16, 16, 0.5, 1, offset_x - 32, -125))
 
 
 def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
@@ -638,11 +625,12 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
 
 def renderMainMenu():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
-    renderScaled(sun, centerAnchor(48*4, 48*4, 0.1, 0.2))
+    renderScaled(sun.play(), centerAnchor(48*4, 48*4, 0.1, 0.2))
     renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
     renderScaled(cloud.play(), centerAnchor(96*4, 96*4, 0.7, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
+    renderScaled(smoke.play(), centerAnchor(48*4, 48*4, 0.955, 0.45))
     new_game_b.draw()
     login_enter_b.draw()
     exit_b.draw()
