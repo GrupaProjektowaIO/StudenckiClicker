@@ -166,7 +166,6 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 # sprites - main menu
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
 sun = pygame.image.load("sprites/sun.png")
-cloud = pygame.image.load("sprites/cloud.png")
 title = pygame.image.load("sprites/title.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
 login_button = pygame.image.load("sprites/login_button.png")
@@ -249,7 +248,7 @@ class Animation:
         return self.frames[self.index]
 
 
-matrix = Animation("matrix", 22, 12)
+cloud = Animation("cloud", 6, 2.5)
 
 
 class Objective:
@@ -640,8 +639,10 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
 def renderMainMenu():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(sun, centerAnchor(48*4, 48*4, 0.1, 0.2))
-    renderScaled(cloud, centerAnchor(96*4, 48*4, 0.75, 0.2))
     renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(cloud.play(), centerAnchor(96*4, 96*4, 0.7, 0.2))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
     new_game_b.draw()
     login_enter_b.draw()
     exit_b.draw()
