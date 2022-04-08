@@ -161,9 +161,28 @@ text_achievements = font_menu_button.render("Osiągnięcia", False, (0, 0, 0))
 text_back = font_menu_button.render("Powrót", False, (0, 0, 0))
 text_exit = font_menu_button.render("Wyjście", False, (0, 0, 0))
 
+text_podyplomowe = font_menu_button.render("Studia Podyplomowe", False, (0, 0, 0)) # poziom latwy
+text_informatyka = font_menu_button.render("Studia Informatyczne", False, (0, 0, 0)) # poziom medium
+text_medycyna = font_menu_button.render("Studia Medyczne", False, (0, 0, 0)) # poziom hard
+
+text_dummy = font_title.render("WYBIERZ POZIOM", False, (255, 255, 255))
+
+text_level_desc_1_dif = font_title.render("Poziom: Łatwy", False, (255, 255, 255))
+text_level_desc_2_dif = font_title.render("Poziom: Średni", False, (255, 255, 255))
+text_level_desc_3_dif = font_title.render("Poziom: Trudny", False, (255, 255, 255))
+
+text_level_desc_1_len = font_title.render("Długość: 3 lata", False, (255, 255, 255))
+text_level_desc_2_len = font_title.render("Długość: 5 lat", False, (255, 255, 255))
+text_level_desc_3_len = font_title.render("Długość: 6 lat", False, (255, 255, 255))
+
+text_level_desc_1_boost = font_title.render("Nagroda: Bonus do Czasu", False, (255, 255, 255))
+text_level_desc_2_boost = font_title.render("Nagroda: Bonus do Zdrowia Psychicznego", False, (255, 255, 255))
+text_level_desc_3_boost = font_title.render("Nagroda: Bonus do Zdrowia Fizycznego", False, (255, 255, 255))
+
 text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
+x_button = pygame.image.load("sprites/x_button.png")
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
 title = pygame.image.load("sprites/title.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
@@ -182,7 +201,11 @@ exit_button_p = pygame.image.load("sprites/exit_button_p.png")
 login_panel = pygame.image.load("sprites/login_panel.png")
 # sprites - game
 game_background = pygame.image.load("sprites/game_background.png")
+Computer_science_diffuculty = pygame.image.load("sprites/Computer_science_diffuculty.png")
+Medic_school_dificulty = pygame.image.load("sprites/Medic_school_dificulty.png")
 board = pygame.image.load("sprites/board.png")
+
+current_game_background = game_background
 
 healthbar = pygame.image.load("sprites/bar.png")
 sanitybar = pygame.image.load("sprites/bar.png")
@@ -385,7 +408,46 @@ text_boxes = {
     "password": ""
 }
 
-
+def refreshGame():
+    global health_max
+    global health_current
+    global health_drain
+    global sanity_max
+    global sanity_current
+    global sanity_drain
+    global time_max
+    global time_current
+    global time_drain
+    global current_game_background
+    global objectives
+    objectives[0].setRandom()
+    objectives[1].setRandom()
+    objectives[2].setRandom()
+    health_max = 100
+    health_current = 100
+    health_drain = 1.25
+    sanity_max = 100
+    sanity_current = 100
+    sanity_drain = 1.5
+    time_max = 100
+    time_current = 100
+    time_drain = 1.75
+    current_game_background = Computer_science_diffuculty
+def setDifficulty(level):
+    global health_drain
+    global sanity_drain
+    global time_drain
+    global current_game_background
+    if level == 0:
+        health_drain *= 0.95
+        sanity_drain *= 0.95
+        time_drain *= 0.95
+        current_game_background = game_background
+    elif level == 2:
+        health_drain *= 1.45
+        sanity_drain *= 1.45
+        time_drain *= 1.45
+        current_game_background = Medic_school_dificulty
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
     x_scale = screen.get_width() / 1920
@@ -491,7 +553,6 @@ class Button:
                 self.pressed = True
             else:
                 if self.pressed == True:
-                    print('click')
                     self.pressed = False
                     self.sprite_t = self.sprite
         else:
@@ -683,7 +744,7 @@ def renderAchievements():
 
 
 def renderGame():
-    renderScaled(game_background, centerAnchor(1920, 1080))
+    renderScaled(current_game_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
     global health_current
     global sanity_current
@@ -720,6 +781,43 @@ def renderGame():
         health_current = 100
         sanity_current = 100
         time_current = 100
+    renderScaled(x_button, centerAnchor(64, 64, 1, 0, -32, 32))
+def renderDifficultySetter():
+    mouse = pygame.mouse.get_pos()
+    if centerAnchor(384*2, 89*1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
+        renderScaled(game_background, centerAnchor(1920, 1080))
+    elif centerAnchor(384*2, 89*1.5, 0.75, 0.5).collidepoint(mouse[0], mouse[1]):
+        renderScaled(Computer_science_diffuculty, centerAnchor(1920, 1080))
+    elif centerAnchor(384*2, 89*1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
+        renderScaled(Medic_school_dificulty, centerAnchor(1920, 1080))
+    else:
+        renderScaled(main_menu_background, centerAnchor(1920, 1080))
+    renderScaled(board, centerAnchor(415 * 2, 256 * 2, 0.25, 0.5, 128, -64))
+
+    if centerAnchor(384*2, 89*1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
+        renderScaled(text_level_desc_1_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
+        renderScaled(text_level_desc_1_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
+        renderScaled(text_level_desc_1_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
+    elif centerAnchor(384*2, 89*1.5, 0.75, 0.5).collidepoint(mouse[0], mouse[1]):
+        renderScaled(text_level_desc_2_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
+        renderScaled(text_level_desc_2_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
+        renderScaled(text_level_desc_2_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
+    elif centerAnchor(384*2, 89*1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
+        renderScaled(text_level_desc_3_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
+        renderScaled(text_level_desc_3_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
+        renderScaled(text_level_desc_3_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
+    else:
+        renderScaled(text_dummy, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
+
+    renderScaled(menu_button, centerAnchor(384*2, 89*1.5, 0.75, 0.25))
+    renderScaled(text_podyplomowe, centerAnchor(364*2, 79*1.5, 0.75, 0.25))
+    renderScaled(menu_button, centerAnchor(384*2, 89*1.5, 0.75, 0.5))
+    renderScaled(text_informatyka, centerAnchor(364*2, 79*1.5, 0.75, 0.5))
+    renderScaled(menu_button, centerAnchor(384*2, 89*1.5, 0.75, 0.75))
+    renderScaled(text_medycyna, centerAnchor(364*2, 79*1.5, 0.75, 0.75))
+    renderScaled(x_button, centerAnchor(64, 64, 1, 0, -32, 32))
+
+
 
 
 gameState = "main_menu"
@@ -732,6 +830,8 @@ while running:
         renderLoginPanel()
     elif gameState == "register_panel":
         renderRegisterPanel()
+    elif gameState == "difficulty_setter":
+        renderDifficultySetter()
     # elif gamestate == "achievements":
     # renderAchievements()
     elif gameState == "game":
@@ -744,7 +844,7 @@ while running:
             mouse = pygame.mouse.get_pos()
             if gameState == "main_menu":
                 if centerAnchor(256, 80, 0.5, 0.25, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
-                    gameState = "game"
+                    gameState = "difficulty_setter"
                     announcement = ""
                 elif centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
@@ -767,6 +867,21 @@ while running:
                     announcement = ""
                 elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
                     signUp(text_boxes['username'], text_boxes['password'])
+            elif gameState == "difficulty_setter":
+                if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
+                    gameState = "main_menu"
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
+                    refreshGame()
+                    setDifficulty(0)
+                    gameState = "game"
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.5).collidepoint(mouse[0], mouse[1]):
+                    refreshGame()
+                    setDifficulty(1)
+                    gameState = "game"
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
+                    refreshGame()
+                    setDifficulty(2)
+                    gameState = "game"
             # nie dziala
             # print(login_enter_b.pressed)
             # if gameState == "main_menu":
