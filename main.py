@@ -378,9 +378,7 @@ for k in objectiveTypes:
     objectiveTypes[k].renderedTitle = font_title.render(objectiveTypes[k].title, False, objective_title_color)
     objectiveTypes[k].renderedDesc = font_desc.render(objectiveTypes[k].desc, False, objective_title_color)
 
-objectives = \
-    [
-        Objective(), Objective(), Objective(),
+objectives = [
         Objective(), Objective(), Objective()
     ]
 
@@ -394,9 +392,6 @@ objectives[5].setType("no_break")"""
 objectives[0].setRandom()
 objectives[1].setRandom()
 objectives[2].setRandom()
-objectives[3].setRandom()
-objectives[4].setRandom()
-objectives[5].setRandom()
 
 health_max = 100
 health_current = 100
@@ -409,6 +404,10 @@ sanity_drain = 1.15
 time_max = 100
 time_current = 100
 time_drain = 1.175
+
+clock_activated=False
+coffee_activated=False
+energy_drink_activated=False
 
 active_text_box = ""
 text_boxes = {
@@ -579,7 +578,7 @@ login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 //
 register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2)
 # register
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30)
-register_back_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2)
+register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2)
 # difficulty menu
 podyplomowe_b = Button(podyplomowe_button,podyplomowe_button_p,384 * 2, 89 * 1.5, 0.75, 0.25)
 informatyczne_b = Button(informatyczne_button,informatyczne_button_p,384 * 2, 89 * 1.5, 0.75, 0.5)
@@ -727,9 +726,12 @@ def renderLoginPanel():
     login_b.draw()
     login_back_b.draw()
     register_enter_b.draw()
+    if register_enter_b.pressed:
+        a = font.render(" ", False, (200, 0, 0))
+        renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
     if announcement != "":
         a = font.render(announcement, False, (200, 0, 0))
-        renderScaled(a, centerAnchor(250, 50, 0.5, 0, 0, 128 // 2 + 600))
+        renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
 
 
 def renderRegisterPanel():
@@ -740,14 +742,16 @@ def renderRegisterPanel():
     renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
     register_b.draw()
     register_back_b.draw()
+    if register_back_b.pressed:
+        a = font.render(" ", False, (200, 0, 0))
+        renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
     # renderScaled(register_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
     # renderScaled(text_register2, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
-    renderScaled(back_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
     # renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 0, 128 // 2))
     # signUp(text_boxes['username'], text_boxes['password'])
     if announcement != "":
         a = font.render(announcement, False, (200, 0, 0))
-        renderScaled(a, centerAnchor(250, 50, 0.5, 0, 0, 128 // 2 + 600))
+        renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
 
 
 def renderAchievements():
@@ -761,7 +765,6 @@ def renderGame():
     global sanity_current
     global time_current
     global gameState
-
     fill = health_current / health_max
     renderScaled(health_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20 - 70))
     renderScaled(healthbar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70))
@@ -784,9 +787,13 @@ def renderGame():
     renderObjectivePaper(2)
 
     time_delta = timer.get_time()
-    health_current -= health_drain * (time_delta / 1000)
-    sanity_current -= sanity_drain * (time_delta / 1000)
-    time_current -= time_drain * (time_delta / 1000)
+    print(time_delta/1000)
+    if clock_activated:
+        print("freeze")
+    else:
+        health_current -= health_drain * (time_delta / 1000)
+        sanity_current -= sanity_drain * (time_delta / 1000)
+        time_current -= time_drain * (time_delta / 1000)
     if health_current <= 0 or sanity_current <= 0 or time_current <= 0:
         gameState = "main_menu"
         health_current = 100
@@ -867,11 +874,9 @@ while running:
                     login(text_boxes['username'], text_boxes['password'])
                 elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "register_panel"
-                    announcement = ""
             elif gameState == "register_panel":
                 if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
-                    announcement = ""
                 elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
                     signUp(text_boxes['username'], text_boxes['password'])
             elif gameState == "difficulty_setter":
