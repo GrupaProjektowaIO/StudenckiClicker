@@ -183,6 +183,7 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
 x_button = pygame.image.load("sprites/x_button.png")
+x_button_p = pygame.image.load("sprites/x_button_p.png")
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
 title = pygame.image.load("sprites/title.png")
 menu_button = pygame.image.load("sprites/menu_button.png")
@@ -199,10 +200,17 @@ back_button_p = pygame.image.load("sprites/back_button_p.png")
 register_button_p = pygame.image.load("sprites/register_button_p.png")
 exit_button_p = pygame.image.load("sprites/exit_button_p.png")
 login_panel = pygame.image.load("sprites/login_panel.png")
+# sprites - difficulty options
+informatyczne_button = pygame.image.load("sprites/informatyczne_button.png")
+informatyczne_button_p = pygame.image.load("sprites/informatyczne_button_p.png")
+podyplomowe_button = pygame.image.load("sprites/podyplomowe_button.png")
+podyplomowe_button_p = pygame.image.load("sprites/podyplomowe_button_p.png")
+medyczne_button = pygame.image.load("sprites/medyczne_button.png")
+medyczne_button_p = pygame.image.load("sprites/medyczne_button_p.png")
 # sprites - game
 game_background = pygame.image.load("sprites/game_background.png")
-Computer_science_diffuculty = pygame.image.load("sprites/Computer_science_diffuculty.png")
-Medic_school_dificulty = pygame.image.load("sprites/Medic_school_dificulty.png")
+Computer_science_difficulty = pygame.image.load("sprites/Computer_science_difficulty.png")
+Medic_school_difficulty = pygame.image.load("sprites/Medic_school_difficulty.png")
 board = pygame.image.load("sprites/board.png")
 
 current_game_background = game_background
@@ -432,7 +440,7 @@ def refreshGame():
     time_max = 100
     time_current = 100
     time_drain = 1.75
-    current_game_background = Computer_science_diffuculty
+    current_game_background = Computer_science_difficulty
 def setDifficulty(level):
     global health_drain
     global sanity_drain
@@ -447,7 +455,7 @@ def setDifficulty(level):
         health_drain *= 1.45
         sanity_drain *= 1.45
         time_drain *= 1.45
-        current_game_background = Medic_school_dificulty
+        current_game_background = Medic_school_difficulty
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
     x_scale = screen.get_width() / 1920
@@ -526,7 +534,7 @@ def renderTextBox(index, rect):
 
 
 class Button:
-    def __init__(self, sprite, sprite_p, width, height, percent_x, percent_y, offset_x, offset_y):
+    def __init__(self, sprite, sprite_p, width, height, percent_x, percent_y, offset_x=0, offset_y=0):
         self.pressed = False
 
         self.offset_y = offset_y
@@ -558,7 +566,8 @@ class Button:
         else:
             self.sprite_t = self.sprite
 
-
+#
+x_b = Button(x_button,x_button_p,64, 64, 1, 0, -32, 32)
 # main menu
 new_game_b = Button(new_game_button, new_game_button_p, 256, 80, 0.5, 0.25, 0, 128 // 2)
 login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 // 2)
@@ -568,11 +577,13 @@ achievements_b = Button(achievements_button, achievements_button_p, 256, 80, 0.5
 login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30)
 login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2)
 register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2)
-
 # register
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30)
 register_back_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2)
-
+# difficulty menu
+podyplomowe_b = Button(podyplomowe_button,podyplomowe_button_p,384 * 2, 89 * 1.5, 0.75, 0.25)
+informatyczne_b = Button(informatyczne_button,informatyczne_button_p,384 * 2, 89 * 1.5, 0.75, 0.5)
+medyczne_b = Button(medyczne_button,medyczne_button_p,384 * 2, 89 * 1.5, 0.75, 0.75)
 
 def renderObjectivePaper(index=0):
     o_type = objectiveTypes[objectives[index].objectiveType]
@@ -781,15 +792,15 @@ def renderGame():
         health_current = 100
         sanity_current = 100
         time_current = 100
-    renderScaled(x_button, centerAnchor(64, 64, 1, 0, -32, 32))
+    x_b.draw()
 def renderDifficultySetter():
     mouse = pygame.mouse.get_pos()
     if centerAnchor(384*2, 89*1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
         renderScaled(game_background, centerAnchor(1920, 1080))
     elif centerAnchor(384*2, 89*1.5, 0.75, 0.5).collidepoint(mouse[0], mouse[1]):
-        renderScaled(Computer_science_diffuculty, centerAnchor(1920, 1080))
+        renderScaled(Computer_science_difficulty, centerAnchor(1920, 1080))
     elif centerAnchor(384*2, 89*1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
-        renderScaled(Medic_school_dificulty, centerAnchor(1920, 1080))
+        renderScaled(Medic_school_difficulty, centerAnchor(1920, 1080))
     else:
         renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(415 * 2, 256 * 2, 0.25, 0.5, 128, -64))
@@ -808,14 +819,10 @@ def renderDifficultySetter():
         renderScaled(text_level_desc_3_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
     else:
         renderScaled(text_dummy, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
-
-    renderScaled(menu_button, centerAnchor(384*2, 89*1.5, 0.75, 0.25))
-    renderScaled(text_podyplomowe, centerAnchor(364*2, 79*1.5, 0.75, 0.25))
-    renderScaled(menu_button, centerAnchor(384*2, 89*1.5, 0.75, 0.5))
-    renderScaled(text_informatyka, centerAnchor(364*2, 79*1.5, 0.75, 0.5))
-    renderScaled(menu_button, centerAnchor(384*2, 89*1.5, 0.75, 0.75))
-    renderScaled(text_medycyna, centerAnchor(364*2, 79*1.5, 0.75, 0.75))
-    renderScaled(x_button, centerAnchor(64, 64, 1, 0, -32, 32))
+    podyplomowe_b.draw()
+    informatyczne_b.draw()
+    medyczne_b.draw()
+    x_b.draw()
 
 
 
