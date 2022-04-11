@@ -152,8 +152,8 @@ font_menu_button = pygame.font.Font('fonts/VT323-Regular.ttf', 24)
 
 text_play = font_menu_button.render("Nowa Gra", False, (0, 0, 0))
 text_login = font_menu_button.render("Logowanie", False, (0, 0, 0))
-text_username = font_menu_button.render("Login: ", False, (0, 255, 0))
-text_password = font_menu_button.render("Hasło: ", False, (0, 255, 0))
+text_username = font_menu_button.render("Login: ", False, (144, 164, 174))
+text_password = font_menu_button.render("Hasło: ", False, (144, 164, 174))
 text_log_in = font_menu_button.render("Zaloguj się", False, (0, 0, 0))
 text_register2 = font_menu_button.render("Zarejestruj się", False, (0, 0, 0))
 text_register = font_menu_button.render("Zarejestruj się...", False, (0, 0, 0))
@@ -565,13 +565,13 @@ login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 
 exit_b = Button(exit_button, exit_button_p, 221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62)
 achievements_b = Button(achievements_button, achievements_button_p, 256, 80, 0.5, 0.55, 0, 128 // 2)
 # login
-login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30)
-login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2)
-register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2)
+login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30+32)
+login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2+32)
+register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2+32)
 
 # register
-register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30)
-register_back_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2)
+register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30+32)
+register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2+32)
 
 
 def renderObjectivePaper(index=0):
@@ -708,35 +708,49 @@ announcement = ""
 
 
 def renderLoginPanel():
+    renderScaled(main_menu_background, centerAnchor(1920, 1080))
+    renderScaled(sun.play(), centerAnchor(48 * 4, 48 * 4, 0.1, 0.2))
+    renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.7, 0.2))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
+    renderScaled(smoke.play(), centerAnchor(48 * 4, 48 * 4, 0.955, 0.45))
     renderScaled(login_panel, centerAnchor(576, 768, 0.5, 0.3375, 0, 128 // 2))
-    renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
-    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
-    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
-    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
+    renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70+32))
+    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2+32))
+    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100+32))
+    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30+32))
     login_b.draw()
     login_back_b.draw()
     register_enter_b.draw()
     if announcement != "":
         a = font.render(announcement, False, (200, 0, 0))
-        renderScaled(a, centerAnchor(250, 50, 0.5, 0, 0, 128 // 2 + 600))
+        renderScaled(a, centerAnchor(450, 50, 0.5, 0, 0, 128 // 2 + 600))
 
 
 def renderRegisterPanel():
-    renderScaled(login_panel, centerAnchor(576, 512, 0.5, 0.225, 0, 128 // 2))
-    renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70))
-    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2))
-    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100))
-    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30))
+    renderScaled(main_menu_background, centerAnchor(1920, 1080))
+    renderScaled(sun.play(), centerAnchor(48 * 4, 48 * 4, 0.1, 0.2))
+    renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.7, 0.2))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
+    renderScaled(smoke.play(), centerAnchor(48 * 4, 48 * 4, 0.955, 0.45))
+    renderScaled(login_panel, centerAnchor(576, 768, 0.5, 0.3375, 0, 128 // 2))
+    renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70+32))
+    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2+32))
+    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100+32))
+    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30+32))
     register_b.draw()
     register_back_b.draw()
     # renderScaled(register_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
     # renderScaled(text_register2, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
-    renderScaled(back_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
+    #renderScaled(back_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
     # renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 0, 128 // 2))
     # signUp(text_boxes['username'], text_boxes['password'])
     if announcement != "":
         a = font.render(announcement, False, (200, 0, 0))
-        renderScaled(a, centerAnchor(250, 50, 0.5, 0, 0, 128 // 2 + 600))
+        renderScaled(a, centerAnchor(450, 50, 0.5, 0, 0, 128 // 2 + 600))
 
 
 def renderAchievements():
@@ -854,18 +868,18 @@ while running:
                 elif centerAnchor(221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62).collidepoint(mouse[0], mouse[1]):
                     running = False
             elif gameState == "login_panel":
-                if centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(256, 70, 0.5, 0.4, 136, 128 // 2+32).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
-                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30+32).collidepoint(mouse[0], mouse[1]):
                     login(text_boxes['username'], text_boxes['password'])
-                elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2+32).collidepoint(mouse[0], mouse[1]):
                     gameState = "register_panel"
                     announcement = ""
             elif gameState == "register_panel":
-                if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2+32).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
                     announcement = ""
-                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30+32).collidepoint(mouse[0], mouse[1]):
                     signUp(text_boxes['username'], text_boxes['password'])
             elif gameState == "difficulty_setter":
                 if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
