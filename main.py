@@ -183,6 +183,7 @@ text_level_desc_3_boost = font_title.render("Nagroda: Bonus do Zdrowia Fizyczneg
 text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
+pixel = pygame.image.load("sprites/pixel.png")
 x_button = pygame.image.load("sprites/x_button.png")
 x_button_p = pygame.image.load("sprites/x_button_p.png")
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
@@ -314,6 +315,7 @@ class Objective:
         self.setType(random.choice(list(objectiveTypes.keys())))
 
     def update(self):
+        global premie_lotne_timer
         if self.timer < 0:
             self.points -= timer.get_time() / 1000
             if self.points < 0:
@@ -322,8 +324,21 @@ class Objective:
             self.timer -= timer.get_time()
         if self.isCompleted:
             self.setRandom()
+        if premie_lotne_timer <= 0:
+            resetPowerUps()
+        else:
+            premie_lotne_timer -= timer.get_time() / 3
 
     def clicked(self):
+        global premie_lotne_x
+        global premie_lotne_y
+        global premie_lotne_type
+        global premie_lotne_sprite_timer
+        if premie_lotne_sprite_timer <= 0 and premie_lotne_timer <= 0 and random.random() * 100 < premie_lotne_chance:
+            premie_lotne_x = 0.4 + random.random() / 5
+            premie_lotne_y = 0.4 + random.random() / 5
+            premie_lotne_type = random.choice(range(premie_lotne_type_amount))
+            premie_lotne_sprite_timer = 2000
         self.timer = self.drain_cooldown
         if coffee_activated:
             self.points += 2
@@ -412,7 +427,46 @@ time_drain = 1.175
 clock_activated = False
 coffee_activated = False
 energy_drink_activated = False
+premie_lotne_type_amount = 3
+premie_lotne_timer = 0
+premie_lotne_base_duration = 5000
+premie_lotne_chance = 100
+premie_lotne_x = 0
+premie_lotne_y = 0
+premie_lotne_type = 0
+premie_lotne_sprite_timer = 0
 
+def getPowerUpSprite(t):
+    global clock_activated
+    global coffee_activated
+    global energy_drink_activated
+    if t == 0:
+        return clock
+    elif t == 1:
+        return coffee
+    elif t == 2:
+        return energy_drink
+def activatePowerUp(t):
+    global clock_activated
+    global coffee_activated
+    global energy_drink_activated
+    global premie_lotne_sprite_timer
+    global premie_lotne_timer
+    premie_lotne_timer = premie_lotne_base_duration
+    if t == 0:
+        clock_activated = True
+    elif t == 1:
+        coffee_activated = True
+    elif t == 2:
+        energy_drink_activated = True
+    premie_lotne_sprite_timer = 0
+def resetPowerUps():
+    global clock_activated
+    global coffee_activated
+    global energy_drink_activated
+    clock_activated = False
+    coffee_activated = False
+    energy_drink_activated = False
 active_text_box = ""
 text_boxes = {
     "username": "",
@@ -432,6 +486,11 @@ def refreshGame():
     global time_drain
     global current_game_background
     global objectives
+    global clock_activated
+    global coffee_activated
+    global energy_drink_activated
+    global premie_lotne_timer
+    resetPowerUps()
     objectives[0].setRandom()
     objectives[1].setRandom()
     objectives[2].setRandom()
@@ -445,7 +504,10 @@ def refreshGame():
     time_current = 100
     time_drain = 1.75
     current_game_background = Computer_science_difficulty
-
+    clock_activated = False
+    coffee_activated = False
+    energy_drink_activated = False
+    premie_lotne_timer = 0
 
 def setDifficulty(level):
     global health_drain
@@ -481,11 +543,12 @@ def renderScaled(sprite, rect):
 text_timer = 0
 last_key = 0
 
-
+text_caret = 0
 def renderTextBox(index, rect):
     global active_text_box
     global text_timer
     global last_key
+    global text_caret
     text = text_boxes[index]
     renderScaled(text_block_container, rect)
     for e in pygame.event.get():
@@ -507,6 +570,11 @@ def renderTextBox(index, rect):
         pygame.event.post(e)
     ks = pygame.key.get_pressed()
     if active_text_box == index:
+        if text_caret < 250:
+            renderScaled(pixel, pygame.Rect(rect.x+12 + len(text) * 12, rect.y+12, 4, rect.h-24))
+        text_caret += timer.get_time()
+        if text_caret > 500:
+            text_caret = 0
         # for k in range(97, 123):
         for k in range(0, 127):
             if ks[k]:
@@ -539,6 +607,7 @@ def renderTextBox(index, rect):
                 break
     if text_timer >= 0:
         text_timer -= timer.get_time()
+
     render = font.render(text, False, (0, 0, 0))
     screen.blit(render, (rect.x + 5, rect.y + 5))
     text_boxes[index] = text
@@ -594,7 +663,6 @@ register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4,
 # register
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30+32)
 register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2+32)
-
 
 def renderObjectivePaper(index=0):
     o_type = objectiveTypes[objectives[index].objectiveType]
@@ -827,6 +895,8 @@ def renderGame():
         time_current = 100
     x_b.draw()
 
+    if premie_lotne_sprite_timer > 0:
+        renderScaled(getPowerUpSprite(premie_lotne_type), centerAnchor(128, 128, premie_lotne_x, premie_lotne_y))
 
 def renderDifficultySetter():
     mouse = pygame.mouse.get_pos()
@@ -957,9 +1027,13 @@ while running:
             #         signUp(text_boxes['username'], text_boxes['password'])
             elif gameState == "game":
                 if energy_drink_activated:
-                    objectives[0].clicked()
-                    objectives[1].clicked()
-                    objectives[2].clicked()
+                    if centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
+                        gameState = "main_menu"
+                    else:
+                        objectives[0].clicked()
+                        objectives[1].clicked()
+                        objectives[2].clicked()
+
                 else:
                     if centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, -82 * 3.5 - 50, -102 * 1.75).collidepoint(mouse[0],mouse[1]):
                         objectives[0].clicked()
@@ -969,6 +1043,8 @@ while running:
                         objectives[2].clicked()
                     elif centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
                         gameState = "main_menu"
+                    elif centerAnchor(128, 128, premie_lotne_x, premie_lotne_y).collidepoint(mouse[0],mouse[1]):
+                        activatePowerUp(premie_lotne_type)
 
         elif event.type == pygame.QUIT:
             running = False
