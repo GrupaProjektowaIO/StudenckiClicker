@@ -586,7 +586,7 @@ login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 
 exit_b = Button(exit_button, exit_button_p, 221, 70, 0.5, 0.70, 0, (128 // 2) * 1.62)
 achievements_b = Button(achievements_button, achievements_button_p, 256, 80, 0.5, 0.55, 0, 128 // 2)
 # login
-<<<<<<< HEAD
+
 login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30+32)
 login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2+32)
 register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2+32)
@@ -594,18 +594,6 @@ register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4,
 # register
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30+32)
 register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2+32)
-=======
-login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30)
-login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2)
-register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2)
-# register
-register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30)
-register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2)
-# difficulty menu
-podyplomowe_b = Button(podyplomowe_button, podyplomowe_button_p, 384 * 2, 89 * 1.5, 0.75, 0.25)
-informatyczne_b = Button(informatyczne_button, informatyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.5)
-medyczne_b = Button(medyczne_button, medyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.75)
->>>>>>> 1f7585b5725f25356c8a36c308d3db082c8a4e6a
 
 
 def renderObjectivePaper(index=0):
@@ -760,11 +748,7 @@ def renderLoginPanel():
         renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
     if announcement != "":
         a = font.render(announcement, False, (200, 0, 0))
-<<<<<<< HEAD
-        renderScaled(a, centerAnchor(450, 50, 0.5, 0, 0, 128 // 2 + 600))
-=======
         renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
->>>>>>> 1f7585b5725f25356c8a36c308d3db082c8a4e6a
 
 
 def renderRegisterPanel():
@@ -787,19 +771,13 @@ def renderRegisterPanel():
         renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
     # renderScaled(register_button, centerAnchor(256, 70, 0.5, 0.3, 0, 128 // 2 - 30))
     # renderScaled(text_register2, centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30))
-<<<<<<< HEAD
     #renderScaled(back_button, centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2))
-=======
->>>>>>> 1f7585b5725f25356c8a36c308d3db082c8a4e6a
+
     # renderScaled(text_back, centerAnchor(157, 60, 0.5, 0.4, 0, 128 // 2))
     # signUp(text_boxes['username'], text_boxes['password'])
     if announcement != "":
         a = font.render(announcement, False, (200, 0, 0))
-<<<<<<< HEAD
-        renderScaled(a, centerAnchor(450, 50, 0.5, 0, 0, 128 // 2 + 600))
-=======
         renderScaled(a, centerAnchor(550, 100, 0.5, 0, 0, 128 // 2 + 600))
->>>>>>> 1f7585b5725f25356c8a36c308d3db082c8a4e6a
 
 
 def renderAchievements():
@@ -876,10 +854,20 @@ def renderDifficultySetter():
         renderScaled(text_level_desc_3_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
     else:
         renderScaled(text_dummy, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
-    podyplomowe_b.draw()
-    informatyczne_b.draw()
-    medyczne_b.draw()
-    x_b.draw()
+
+    renderScaled(podyplomowe_button, centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25))
+    #renderScaled(text_podyplomowe, centerAnchor(364 * 2, 79 * 1.5, 0.75, 0.25))
+    renderScaled(informatyczne_button, centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.5))
+    #renderScaled(text_informatyka, centerAnchor(364 * 2, 79 * 1.5, 0.75, 0.5))
+    renderScaled(medyczne_button, centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75))
+    #renderScaled(text_medycyna, centerAnchor(364 * 2, 79 * 1.5, 0.75, 0.75))
+    renderScaled(x_button, centerAnchor(64, 64, 1, 0, -32, 32))
+
+
+    #podyplomowe_b.draw()
+    #informatyczne_b.draw()
+    #medyczne_b.draw()
+    #x_b.draw()
 
 
 gameState = "main_menu"
@@ -925,12 +913,8 @@ while running:
             elif gameState == "register_panel":
                 if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2+32).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
-<<<<<<< HEAD
                     announcement = ""
                 elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30+32).collidepoint(mouse[0], mouse[1]):
-=======
-                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30).collidepoint(mouse[0], mouse[1]):
->>>>>>> 1f7585b5725f25356c8a36c308d3db082c8a4e6a
                     signUp(text_boxes['username'], text_boxes['password'])
             elif gameState == "difficulty_setter":
                 if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
