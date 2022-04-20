@@ -133,6 +133,8 @@ objective_title_color = (56, 0, 0)
 # tutoriale: formatowanie textu, maski, sound effects, przejscia pomiedzy ekranami,
 
 pygame.init()
+pygame.mouse.set_visible(False)
+#pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
 # screen = pygame.display.set_mode([1920, 1080])
 screen = pygame.display.set_mode([1920, 1080], pygame.FULLSCREEN)
 pygame.display.set_caption("Clicker")
@@ -184,6 +186,7 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
 pixel = pygame.image.load("sprites/pixel.png")
+cursor = pygame.image.load("sprites/cursor.png")
 x_button = pygame.image.load("sprites/x_button.png")
 x_button_p = pygame.image.load("sprites/x_button_p.png")
 main_menu_background = pygame.image.load("sprites/main_menu_background.png")
@@ -956,7 +959,8 @@ while running:
     # renderAchievements()
     elif gameState == "game":
         renderGame()
-
+    mpose = pygame.mouse.get_pos()
+    renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0]+32, mpose[1]+32))
     pygame.display.flip()
 
     for event in pygame.event.get():
