@@ -217,7 +217,7 @@ game_background = pygame.image.load("sprites/game_background.png")
 Computer_science_difficulty = pygame.image.load("sprites/Computer_science_difficulty.png")
 Medic_school_difficulty = pygame.image.load("sprites/Medic_school_difficulty.png")
 board = pygame.image.load("sprites/board.png")
-
+sesja = pygame.image.load("sprites/sesja.png")
 current_game_background = game_background
 
 healthbar = pygame.image.load("sprites/bar.png")
@@ -592,7 +592,7 @@ def renderTextBox(index, rect):
                                 text += chr(k - 32)
                         else:
                             text += chr(k)
-                    text_timer = 200
+                    text_timer = 250
                     last_key = k
                 elif text_timer < 0:
                     if ks[pygame.K_BACKSPACE]:
@@ -778,7 +778,7 @@ def renderObjectivePanel(percent_y=0.5, offset_x=0, index=0, reversed=False):
 def renderMainMenu():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(sun.play(), centerAnchor(48 * 4, 48 * 4, 0.1, 0.2))
-    renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(title, centerAnchor(384, 256, 0.5, 0.05, 0, 128 // 2 + 30))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.7, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
@@ -801,7 +801,7 @@ announcement = ""
 def renderLoginPanel():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(sun.play(), centerAnchor(48 * 4, 48 * 4, 0.1, 0.2))
-    renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(title, centerAnchor(384, 256, 0.5, 0.05, 0, 128 // 2 + 30))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.7, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
@@ -825,7 +825,7 @@ def renderLoginPanel():
 def renderRegisterPanel():
     renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(sun.play(), centerAnchor(48 * 4, 48 * 4, 0.1, 0.2))
-    renderScaled(title, centerAnchor(384, 128, 0.5, 0, 0, 128 // 2 + 30))
+    renderScaled(title, centerAnchor(384, 128, 0.5, 0.05, 0, 128 // 2 + 30))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.7, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
@@ -857,6 +857,7 @@ def renderAchievements():
 
 def renderGame():
     renderScaled(current_game_background, centerAnchor(1920, 1080))
+    renderScaled(sesja, centerAnchor(196*3, 64*3, 1, 0, -196, 540))
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
     global health_current
     global sanity_current
