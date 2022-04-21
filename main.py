@@ -592,7 +592,7 @@ def renderTextBox(index, rect):
                                 text += chr(k - 32)
                         else:
                             text += chr(k)
-                    text_timer = 250
+                    text_timer = 200
                     last_key = k
                 elif text_timer < 0:
                     if ks[pygame.K_BACKSPACE]:
@@ -605,7 +605,7 @@ def renderTextBox(index, rect):
                                 text += chr(k - 32)
                         else:
                             text += chr(k)
-                    text_timer = 100
+                    text_timer = 50
                     last_key = k
                 break
     if text_timer >= 0:
