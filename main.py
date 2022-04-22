@@ -319,6 +319,7 @@ class Objective:
 
     def update(self):
         global premie_lotne_timer
+        global premie_lotne_sprite_timer
         if self.timer < 0:
             self.points -= timer.get_time() / 1000
             if self.points < 0:
@@ -331,17 +332,19 @@ class Objective:
             resetPowerUps()
         else:
             premie_lotne_timer -= timer.get_time() / 3
-
+        if premie_lotne_sprite_timer > 0:
+            premie_lotne_sprite_timer -= timer.get_time() / 3
     def clicked(self):
         global premie_lotne_x
         global premie_lotne_y
         global premie_lotne_type
         global premie_lotne_sprite_timer
+        global premie_lotne_sprite_timer_duration
         if premie_lotne_sprite_timer <= 0 and premie_lotne_timer <= 0 and random.random() * 100 < premie_lotne_chance:
             premie_lotne_x = 0.4 + random.random() / 5
             premie_lotne_y = 0.4 + random.random() / 5
             premie_lotne_type = random.choice(range(premie_lotne_type_amount))
-            premie_lotne_sprite_timer = 2000
+            premie_lotne_sprite_timer = premie_lotne_sprite_timer_duration
         self.timer = self.drain_cooldown
         if coffee_activated:
             self.points += 2
@@ -438,6 +441,7 @@ premie_lotne_x = 0
 premie_lotne_y = 0
 premie_lotne_type = 0
 premie_lotne_sprite_timer = 0
+premie_lotne_sprite_timer_duration = 2000
 
 def getPowerUpSprite(t):
     global clock_activated
@@ -456,6 +460,7 @@ def activatePowerUp(t):
     global premie_lotne_sprite_timer
     global premie_lotne_timer
     premie_lotne_timer = premie_lotne_base_duration
+    premie_lotne_sprite_timer = -1
     if t == 0:
         clock_activated = True
     elif t == 1:
@@ -511,6 +516,7 @@ def refreshGame():
     coffee_activated = False
     energy_drink_activated = False
     premie_lotne_timer = 0
+    premie_lotne_sprite_timer = 0
 
 def setDifficulty(level):
     global health_drain
