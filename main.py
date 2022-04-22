@@ -967,7 +967,10 @@ while running:
     elif gameState == "game":
         renderGame()
     mpose = pygame.mouse.get_pos()
-    renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0] * 1.25 + 32, mpose[1] * 1.25 + 32))
+    if screen.get_width() > 1920:
+        renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0] + 32, mpose[1] + 32))
+    else:
+        renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0] * 1.25 + 32, mpose[1] * 1.25 + 32))
     pygame.display.flip()
 
     for event in pygame.event.get():
