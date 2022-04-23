@@ -219,6 +219,13 @@ Medic_school_difficulty = pygame.image.load("sprites/Medic_school_difficulty.png
 board = pygame.image.load("sprites/board.png")
 sesja = pygame.image.load("sprites/sesja.png")
 current_game_background = game_background
+# sprite'y dla mateusza
+end_game_button = pygame.image.load("sprites/end_game_button.png")
+end_game_button_p = pygame.image.load("sprites/end_game_button_p.png")
+tooltip_button = pygame.image.load("sprites/tooltip_button.png")
+tooltip_button_p = pygame.image.load("sprites/tooltip_button_p.png")
+try_again_button = pygame.image.load("sprites/try_again_button.png")
+try_again_button_p = pygame.image.load("sprites/try_again_button_p.png")
 
 healthbar = pygame.image.load("sprites/bar.png")
 sanitybar = pygame.image.load("sprites/bar.png")
@@ -658,6 +665,9 @@ class Button:
 
 #
 x_b = Button(x_button, x_button_p, 64, 64, 1, 0, -32, 32)
+podyplomowe_b = Button(podyplomowe_button,podyplomowe_button_p, 384 * 2, 89 * 1.5, 0.75, 0.25)
+informatyczne_b = Button(informatyczne_button,informatyczne_button_p,384 * 2, 89 * 1.5, 0.75, 0.5)
+medyczne_b = Button(medyczne_button,medyczne_button_p,384 * 2, 89 * 1.5, 0.75, 0.75)
 # main menu
 new_game_b = Button(new_game_button, new_game_button_p, 256, 80, 0.5, 0.25, 0, 128 // 2)
 login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 // 2)
@@ -672,6 +682,11 @@ register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4,
 # register
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30+32)
 register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2+32)
+
+#sprite'y dla mateusza
+#tooltip_b = Button(tooltip_button,tooltip_button_p,) #dalej sie tego uzywa jak funkcji lukasza, "centerAnchor"
+#end_game_b = Button(end_game_button,end_game_button_p,)
+#try_again_b = Button(try_again_button,try_again_button_p,)
 
 def renderObjectivePaper(index=0):
     o_type = objectiveTypes[objectives[index].objectiveType]
@@ -935,23 +950,16 @@ def renderDifficultySetter():
     else:
         renderScaled(text_dummy, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
 
-    renderScaled(podyplomowe_button, centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25))
-    #renderScaled(text_podyplomowe, centerAnchor(364 * 2, 79 * 1.5, 0.75, 0.25))
-    renderScaled(informatyczne_button, centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.5))
-    #renderScaled(text_informatyka, centerAnchor(364 * 2, 79 * 1.5, 0.75, 0.5))
-    renderScaled(medyczne_button, centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75))
-    #renderScaled(text_medycyna, centerAnchor(364 * 2, 79 * 1.5, 0.75, 0.75))
-    renderScaled(x_button, centerAnchor(64, 64, 1, 0, -32, 32))
 
-
-    #podyplomowe_b.draw()
-    #informatyczne_b.draw()
-    #medyczne_b.draw()
-    #x_b.draw()
+    podyplomowe_b.draw()
+    informatyczne_b.draw()
+    medyczne_b.draw()
+    x_b.draw()
 
 
 gameState = "main_menu"
 running = True
+infoObject = pygame.display.Info()
 while running:
     timer.tick(60)
     if gameState == "main_menu":
@@ -967,7 +975,7 @@ while running:
     elif gameState == "game":
         renderGame()
     mpose = pygame.mouse.get_pos()
-    if screen.get_width() > 1920:
+    if infoObject.current_w == 1920: #zamienilem ">" na "==" bo u mnie w zlym miejscu jest ten kursor ~KubaK xD
         renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0] + 32, mpose[1] + 32))
     else:
         renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0] * 1.25 + 32, mpose[1] * 1.25 + 32))
