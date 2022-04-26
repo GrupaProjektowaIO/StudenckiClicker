@@ -244,8 +244,8 @@ text_legend_premie_lotne_clock = font_menu_button.render("Zegar: Zatrzymuje Czas
 text_legend_premie_lotne_anticlock = font_menu_button.render("AntyZegar: Przyspiesza Czas", False, (0, 0, 0))
 text_legend_premie_lotne_coffe = font_menu_button.render("Kawa: Zwiększa moc klikania", False, (0, 0, 0))
 text_legend_premie_lotne_anticoffe = font_menu_button.render("AntyKawa: Zmniejsza moc klikania", False, (0, 0, 0))
-text_legend_premie_lotne_dumbell = font_menu_button.render("Hantel:", False, (0, 0, 0))
-text_legend_premie_lotne_antidumbell = font_menu_button.render("AntyHantel:", False, (0, 0, 0))
+text_legend_premie_lotne_dumbell = font_menu_button.render("Hantel: Zmniejsza poziom zadań", False, (0, 0, 0))
+text_legend_premie_lotne_antidumbell = font_menu_button.render("AntyHantel: Zwiększa poziom zadań", False, (0, 0, 0))
 text_legend_premie_lotne_energy_drink = font_menu_button.render("Energetyk: Możesz klikać gdzie chcesz", False, (0, 0, 0))
 text_legend_premie_lotne_antienergy_drink = font_menu_button.render("AntyEnergetyk: Paraliż na klikanie", False, (0, 0, 0))
 
