@@ -252,7 +252,10 @@ text_legend_premie_lotne_antienergy_drink = font_menu_button.render("AntyEnerget
 
 # sprite - achievements
 notebook_achievements_background = pygame.image.load("sprites/notebook_achievements.png")
-trophy = pygame.image.load("sprites/trophy.png")
+trophy_none = pygame.image.load("sprites/trophy_none.png")
+trophy_bronze = pygame.image.load("sprites/trophy_bronze.png")
+trophy_silver = pygame.image.load("sprites/trophy_silver.png")
+trophy_gold = pygame.image.load("sprites/trophy_gold.png")
 
 text_achievements_hidden = font_menu_button.render("???", False, (0, 0, 0))
 text_achievements_hidden_desc = font_menu_button.render("????? ???", False, (0, 0, 0))
@@ -996,6 +999,19 @@ class Achievement:
                 return self.desc.replace("~", str(self.gold_prize))
             else:
                 return "MAX"
+    def getTrophy(self):
+        level = 2
+        if logged_username == "":
+            return trophy_none
+        else:
+            if level == 0:
+                return trophy_none
+            elif level == 1:
+                return trophy_bronze
+            elif level == 2:
+                return trophy_silver
+            else:
+                return trophy_gold
 
 achievements =\
 [
@@ -1020,12 +1036,12 @@ def renderAchievements():
     renderScaled(text_achievements, centerAnchor(256, 48, 0.25, 0, 0, 64))
     renderScaled(text_achievements, centerAnchor(256, 48, 0.75, 0, 0, 64))
     for i in range(6):
-        renderScaled(trophy, centerAnchor(896, 128, 0.25, 0, 0, 192 + i * 140))
+        renderScaled(achievements[i].getTrophy(), centerAnchor(896, 128, 0.25, 0, 0, 192 + i * 140))
         renderScaled(font_title.render(achievements[i].getTitle(), False, (0, 0, 0)), centerAnchor(400, 64, 0.25, 0, 100, 192 + i * 140-32))
         renderScaled(font_title.render(achievements[i].getDesc(0), False, (0, 0, 0)),
                      centerAnchor(600, 64, 0.25, 0, 100, 192 + i * 140 + 32))
     for i in range(6):
-        renderScaled(trophy, centerAnchor(896, 128, 0.75, 0, 0, 192 + i * 140))
+        renderScaled(achievements[i + 6].getTrophy(), centerAnchor(896, 128, 0.75, 0, 0, 192 + i * 140))
         renderScaled(font_title.render(achievements[i + 6].getTitle(), False, (0, 0, 0)),
                      centerAnchor(400, 64, 0.75, 0, 100, 192 + i * 140 - 32))
         renderScaled(font_title.render(achievements[i + 6].getDesc(0), False, (0, 0, 0)),
