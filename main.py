@@ -231,23 +231,23 @@ try_again_button_p = pygame.image.load("sprites/try_again_button_p.png")
 text_legend_stats = font_menu_button.render("Statystyki", False, (0, 0, 0))
 text_legend_stats_desc = font_menu_button.render("Podczas rozgrywki należy śledzić widzoczne poniżej ikony.", False, (0, 0, 0))
 text_legend_stats_desc2 = font_menu_button.render("Kiedy jedna z nich spadnie do zera, to następuje koniec gry.", False, (0, 0, 0))
-text_legend_stats_health = font_menu_button.render("Zdrowie Fizyczne: ", False, (0, 0, 0))
-text_legend_stats_sanity = font_menu_button.render("Zdrowie Psychiczne: ", False, (0, 0, 0))
-text_legend_stats_time = font_menu_button.render("Czas: ", False, (0, 0, 0))
+text_legend_stats_health = font_menu_button.render("Twoje Zdrowie Fizyczne ", False, (0, 0, 0))
+text_legend_stats_sanity = font_menu_button.render("Twoje Zdrowie Psychiczne ", False, (0, 0, 0))
+text_legend_stats_time = font_menu_button.render("Upływający Czas       ", False, (0, 0, 0))
 
 text_legend_premie_lotne = font_menu_button.render("Premie Lotne", False, (0, 0, 0))
 text_legend_premie_lotne_desc = font_menu_button.render("W trakcie gry napotkasz dodatkowe atrybuty studenta.", False, (0, 0, 0))
 text_legend_premie_lotne_desc2 = font_menu_button.render("Kliknięcie na nie ułatwi lub utrudni rozgrywkę.", False, (0, 0, 0))
-text_legend_premie_lotne_book = font_menu_button.render("Książka: jednorazowo dodaje małą ilość wypłnienia celów.", False, (0, 0, 0))
-text_legend_premie_lotne_antibook = font_menu_button.render("AntyKsiążka: jednorazowo odejmuje małą ilość wypłnienia celów.", False, (0, 0, 0))
-text_legend_premie_lotne_clock = font_menu_button.render("Zegar: ", False, (0, 0, 0))
-text_legend_premie_lotne_anticlock = font_menu_button.render("AntyZegar: ", False, (0, 0, 0))
-text_legend_premie_lotne_coffe = font_menu_button.render("Kawa: ", False, (0, 0, 0))
-text_legend_premie_lotne_anticoffe = font_menu_button.render("AntyKawa: ", False, (0, 0, 0))
+text_legend_premie_lotne_book = font_menu_button.render("Książka: dodaje małą ilość wypłnienia celów", False, (0, 0, 0))
+text_legend_premie_lotne_antibook = font_menu_button.render("AntyKsiążka: odejmuje małą ilość wypłnienia celów", False, (0, 0, 0))
+text_legend_premie_lotne_clock = font_menu_button.render("Zegar: Zatrzymuje Czas ", False, (0, 0, 0))
+text_legend_premie_lotne_anticlock = font_menu_button.render("AntyZegar: Przyspiesza Czas", False, (0, 0, 0))
+text_legend_premie_lotne_coffe = font_menu_button.render("Kawa: Zwiększa moc klikania", False, (0, 0, 0))
+text_legend_premie_lotne_anticoffe = font_menu_button.render("AntyKawa: Zmniejsza moc klikania", False, (0, 0, 0))
 text_legend_premie_lotne_dumbell = font_menu_button.render("Hantel:", False, (0, 0, 0))
-text_legend_premie_lotne_antidumbell = font_menu_button.render("AntyHantel: ", False, (0, 0, 0))
-text_legend_premie_lotne_energy_drink = font_menu_button.render("Napój Energetyczny: ", False, (0, 0, 0))
-text_legend_premie_lotne_antienergy_drink = font_menu_button.render("AntyNapój Energetyczny: ", False, (0, 0, 0))
+text_legend_premie_lotne_antidumbell = font_menu_button.render("AntyHantel:", False, (0, 0, 0))
+text_legend_premie_lotne_energy_drink = font_menu_button.render("Energetyk: Możesz klikać gdzie chcesz", False, (0, 0, 0))
+text_legend_premie_lotne_antienergy_drink = font_menu_button.render("AntyEnergetyk: Paraliż na klikanie", False, (0, 0, 0))
 
 
 # sprite - achievements
@@ -562,7 +562,7 @@ def refreshGame():
     energy_drink_activated = False
     premie_lotne_timer = 0
     premie_lotne_sprite_timer = 0
-    premie_lotne_sprite_timer_duration = 2000
+    premie_lotne_sprite_timer_duration = 1000
     premie_lotne_chance = 2
 
 def setDifficulty(level):
@@ -584,8 +584,8 @@ def setDifficulty(level):
         sanity_drain *= 1.45
         time_drain *= 1.45
         current_game_background = Medic_school_difficulty
-        premie_lotne_sprite_timer_duration *= 0.75
-        premie_lotne_chance *= 0.5
+        premie_lotne_sprite_timer_duration *= 1
+        premie_lotne_chance *= 1
 
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
@@ -923,24 +923,54 @@ def renderLegend():
     renderScaled(text_legend_stats, centerAnchor(256, 48, 0.25, 0, 0, 64))
     renderScaled(text_legend_stats_desc, centerAnchor(800, 32, 0.25, 0, 0, 128))
     renderScaled(text_legend_stats_desc2, centerAnchor(800, 32, 0.25, 0, 0, 128+32))
+
     renderScaled(healthicon, centerAnchor(128, 128, 0.25, 0, -320, 256+64))
+    renderScaled(text_legend_stats_health, centerAnchor(500, 32, 0.25, 0, 100, 256+64))
+
+
+
     renderScaled(sanityicon, centerAnchor(128, 128, 0.25, 0, -320, 384+128))
+    renderScaled(text_legend_stats_sanity, centerAnchor(500, 32, 0.25, 0, 100, 384+128))
+
+
     renderScaled(timeicon, centerAnchor(128, 128, 0.25, 0, -320, 512+192))
+    renderScaled(text_legend_stats_time, centerAnchor(500, 32, 0.25, 0, 100, 512+192))
 
     renderScaled(text_legend_premie_lotne, centerAnchor(256, 48, 0.75, 0, 0, 64))
     renderScaled(text_legend_premie_lotne_desc, centerAnchor(800, 32, 0.75, 0, 0, 128))
     renderScaled(text_legend_premie_lotne_desc2, centerAnchor(800, 32, 0.75, 0, 0, 128+32))
-    renderScaled(book, centerAnchor(128, 128, 0.75, 0, -320, 256+64))
-    renderScaled(clock, centerAnchor(128, 128, 0.75, 0, -320, 384+64))
-    renderScaled(coffee, centerAnchor(128, 128, 0.75, 0, -320, 512+64))
-    renderScaled(dumbell, centerAnchor(128, 128, 0.75, 0, -320, 640+64))
-    renderScaled(energy_drink, centerAnchor(128, 128, 0.75, 0, -320, 768+64))
 
-    renderScaled(antibook, centerAnchor(128, 128, 0.75, 0, -176, 256+64))
-    renderScaled(anticlock, centerAnchor(128, 128, 0.75, 0, -176, 384+64))
-    renderScaled(anticoffee, centerAnchor(128, 128, 0.75, 0, -176, 512+64))
-    renderScaled(antidumbell, centerAnchor(128, 128, 0.75, 0, -176, 640+64))
-    renderScaled(antienergy_drink, centerAnchor(128, 128, 0.75, 0, -176, 768+64))
+
+
+    renderScaled(book, centerAnchor(128, 128, 0.75, 0, -360, 256+64))
+    renderScaled(text_legend_premie_lotne_book, centerAnchor(550, 32, 0.75, 0, 162, 256+32))
+    renderScaled(antibook, centerAnchor(128, 128, 0.75, 0, -216, 256 + 64))
+    renderScaled(text_legend_premie_lotne_antibook, centerAnchor(550, 32, 0.75, 0, 162, 256 + 72))
+
+
+    renderScaled(clock, centerAnchor(128, 128, 0.75, 0, -360, 384+64))
+    renderScaled(text_legend_premie_lotne_clock, centerAnchor(550, 32, 0.75, 0, 162, 384+56))
+    renderScaled(anticlock, centerAnchor(128, 128, 0.75, 0, -216, 384 + 64))
+    renderScaled(text_legend_premie_lotne_anticlock, centerAnchor(550, 32, 0.75, 0, 162, 384 + 96))
+
+
+    renderScaled(coffee, centerAnchor(128, 128, 0.75, 0, -360, 512+64))
+    renderScaled(text_legend_premie_lotne_coffe, centerAnchor(550, 32, 0.75, 0, 162, 512+56))
+    renderScaled(anticoffee, centerAnchor(128, 128, 0.75, 0, -216, 512 + 64))
+    renderScaled(text_legend_premie_lotne_anticoffe, centerAnchor(550, 32, 0.75, 0, 162, 512 + 96))
+
+
+
+    renderScaled(dumbell, centerAnchor(128, 128, 0.75, 0, -360, 640+64))
+    renderScaled(text_legend_premie_lotne_dumbell, centerAnchor(550, 32, 0.75, 0, 162, 640 + 56))
+    renderScaled(antidumbell, centerAnchor(128, 128, 0.75, 0, -216, 640 + 64))
+    renderScaled(text_legend_premie_lotne_antidumbell, centerAnchor(550, 32, 0.75, 0, 162, 640 + 96))
+
+
+    renderScaled(energy_drink, centerAnchor(128, 128, 0.75, 0, -360, 768+64))
+    renderScaled(text_legend_premie_lotne_energy_drink, centerAnchor(550, 32, 0.75, 0, 162, 768 + 56))
+    renderScaled(antienergy_drink, centerAnchor(128, 128, 0.75, 0, -216, 768+64))
+    renderScaled(text_legend_premie_lotne_antienergy_drink, centerAnchor(550, 32, 0.75, 0, 162, 768 + 96))
 
 def renderAchievements():
     renderScaled(notebook_achievements_background, centerAnchor(1920, 1080))
