@@ -301,9 +301,6 @@ antienergy_drink = pygame.image.load("sprites/power_ups/antienergy_drink.png")
 clickSound = pygame.mixer.Sound('audio/click.wav')
 winclickSound = pygame.mixer.Sound('audio/winclick.wav')
 midclickSound = pygame.mixer.Sound('audio/midclick.wav')
-maintheme = pygame.mixer.Sound('audio/maintheme.mp3')
-gametheme = pygame.mixer.Sound('audio/gametheme.mp3')
-redthemeclock = pygame.mixer.Sound('audio/redthemeclock.mp3')
 
 # animations
 class Animation:
@@ -1047,8 +1044,9 @@ gameState = "main_menu"
 running = True
 infoObject = pygame.display.Info()
 def playMusic(name):
-    pygame.mixer.music.load("audio/" + name + ".mp3")
-    pygame.mixer.music.play()
+    pass
+    #pygame.mixer.music.load("audio/" + name + ".mp3")
+    #pygame.mixer.music.play()
 
 playMusic("maintheme")
 
