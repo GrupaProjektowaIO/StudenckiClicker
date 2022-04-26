@@ -942,6 +942,48 @@ def renderLegend():
     renderScaled(antidumbell, centerAnchor(128, 128, 0.75, 0, -176, 640+64))
     renderScaled(antienergy_drink, centerAnchor(128, 128, 0.75, 0, -176, 768+64))
 
+class Achievement:
+    def __init__(self, title, desc, bronze_prize, silver_prize, gold_prize):
+        self.title = title
+        self.desc = desc
+        self.bronze_prize = bronze_prize
+        self.silver_prize = silver_prize
+        self.gold_prize = gold_prize
+    def getTitle(self):
+        if logged_username == "":
+            return "?????????"
+        else:
+            return self.title
+    def getDesc(self, level):
+        if logged_username == "":
+            return "?????????????????"
+        else:
+            if level == 0:
+                return self.desc.replace("~", str(self.bronze_prize))
+            elif level == 1:
+                return self.desc.replace("~", str(self.silver_prize))
+            elif level == 2:
+                return self.desc.replace("~", str(self.gold_prize))
+            else:
+                return "MAX"
+
+achievements =\
+[
+    Achievement("Tytuł", "Zdobądź ~ rzeczy", 5, 10, 15),
+    Achievement("Jan", "Zdobądź ~/64 rzeczy", 69, 99, 100),
+    Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+
+Achievement("Drugi", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+]
+
 def renderAchievements():
     renderScaled(notebook_achievements_background, centerAnchor(1920, 1080))
     x_b.draw()
@@ -949,8 +991,15 @@ def renderAchievements():
     renderScaled(text_achievements, centerAnchor(256, 48, 0.75, 0, 0, 64))
     for i in range(6):
         renderScaled(trophy, centerAnchor(896, 128, 0.25, 0, 0, 192 + i * 140))
+        renderScaled(font_title.render(achievements[i].getTitle(), False, (0, 0, 0)), centerAnchor(400, 64, 0.25, 0, 100, 192 + i * 140-32))
+        renderScaled(font_title.render(achievements[i].getDesc(0), False, (0, 0, 0)),
+                     centerAnchor(600, 64, 0.25, 0, 100, 192 + i * 140 + 32))
     for i in range(6):
         renderScaled(trophy, centerAnchor(896, 128, 0.75, 0, 0, 192 + i * 140))
+        renderScaled(font_title.render(achievements[i + 6].getTitle(), False, (0, 0, 0)),
+                     centerAnchor(400, 64, 0.75, 0, 100, 192 + i * 140 - 32))
+        renderScaled(font_title.render(achievements[i + 6].getDesc(0), False, (0, 0, 0)),
+                     centerAnchor(600, 64, 0.75, 0, 100, 192 + i * 140 + 32))
 
 def renderGame():
     renderScaled(current_game_background, centerAnchor(1920, 1080))
