@@ -1198,8 +1198,8 @@ running = True
 infoObject = pygame.display.Info()
 def playMusic(name):
     pass
-    #pygame.mixer.music.load("audio/" + name + ".mp3")
-    #pygame.mixer.music.play()
+    pygame.mixer.music.load("audio/" + name + ".wav")
+    pygame.mixer.music.play()
 
 playMusic("maintheme")
 
