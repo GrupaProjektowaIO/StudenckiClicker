@@ -1086,7 +1086,7 @@ def renderGame():
         time_current -= time_drain * (time_delta / 1000)
     if health_current <= 0 or sanity_current <= 0 or time_current <= 0:
         gameState = "game_over"
-        playMusic("maintheme") # dodać muzykę końca gry
+        playMusic("endtheme") # dodać muzykę końca gry
         health_current = 100
         sanity_current = 100
         time_current = 100
@@ -1141,7 +1141,7 @@ infoObject = pygame.display.Info()
 def playMusic(name):
     pass
     pygame.mixer.music.load("audio/" + name + ".wav")
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
 
 playMusic("maintheme")
 
