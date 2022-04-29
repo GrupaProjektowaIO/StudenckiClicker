@@ -113,6 +113,7 @@ def dbGetHighscore():
 HEALTH = 0
 SANITY = 1
 TIME = 2
+BIRET = 3
 
 LOW = 10
 MEDIUM = 25
@@ -216,6 +217,7 @@ medyczne_button_p = pygame.image.load("sprites/medyczne_button_p.png")
 game_background = pygame.image.load("sprites/game_background.png")
 Computer_science_difficulty = pygame.image.load("sprites/Computer_science_difficulty.png")
 Medic_school_difficulty = pygame.image.load("sprites/Medic_school_difficulty.png")
+session_overlay = pygame.image.load("sprites/overlay_red.png")
 board = pygame.image.load("sprites/board.png")
 sesja = pygame.image.load("sprites/sesja.png")
 current_game_background = game_background
@@ -231,9 +233,10 @@ try_again_button_p = pygame.image.load("sprites/try_again_button_p.png")
 text_legend_stats = font_menu_button.render("Statystyki", False, (0, 0, 0))
 text_legend_stats_desc = font_menu_button.render("Podczas rozgrywki należy śledzić widzoczne poniżej ikony.", False, (0, 0, 0))
 text_legend_stats_desc2 = font_menu_button.render("Kiedy jedna z nich spadnie do zera, to następuje koniec gry.", False, (0, 0, 0))
-text_legend_stats_health = font_menu_button.render("Twoje Zdrowie Fizyczne ", False, (0, 0, 0))
-text_legend_stats_sanity = font_menu_button.render("Twoje Zdrowie Psychiczne ", False, (0, 0, 0))
-text_legend_stats_time = font_menu_button.render("Upływający Czas       ", False, (0, 0, 0))
+text_legend_stats_health = font_menu_button.render("Twoje Zdrowie Fizyczne  ", False, (0, 0, 0))
+text_legend_stats_sanity = font_menu_button.render("Twoje Zdrowie Psychiczne", False, (0, 0, 0))
+text_legend_stats_time = font_menu_button.render("Upływający Czas         ", False, (0, 0, 0))
+text_legend_stats_biret = font_menu_button.render("Sesja                   ", False, (0, 0, 0))
 
 text_legend_premie_lotne = font_menu_button.render("Premie Lotne", False, (0, 0, 0))
 text_legend_premie_lotne_desc = font_menu_button.render("W trakcie gry napotkasz dodatkowe atrybuty studenta.", False, (0, 0, 0))
@@ -268,9 +271,11 @@ timebar = pygame.image.load("sprites/bar.png")
 health_filler = pygame.image.load("sprites/health_filler.png")
 sanity_filler = pygame.image.load("sprites/sanity_filler.png")
 time_filler = pygame.image.load("sprites/time_filler.png")
+biret_filler = pygame.image.load("sprites/biret_filler.png")
 healthicon = pygame.image.load("sprites/health_icon.png")
 sanityicon = pygame.image.load("sprites/sanity_icon.png")
 timeicon = pygame.image.load("sprites/time_icon.png")
+bireticon = pygame.image.load("sprites/biret_icon.png")
 deathicon = pygame.image.load("sprites/death_icon.png")
 diffuculty_progress_bar_easy = pygame.image.load('sprites/difficulty_bar_easy.png')
 diffuculty_progress_bar_medium = pygame.image.load('sprites/difficulty_bar_medium.png')
@@ -360,8 +365,11 @@ class Objective:
         self.isCompleted = False
         self.timer = self.drain_cooldown
 
-    def setRandom(self):
-        self.setType(random.choice(list(objectiveTypes.keys())))
+    def setRandom(self, sesja=False):
+        if sesja:
+            pass
+        else:
+            self.setType(random.choice(list(objectiveTypes.keys())))
 
     def update(self):
         global premie_lotne_timer
@@ -442,7 +450,9 @@ objectiveTypes = \
         "party": ObjectiveType("Impreza!", "Czas na małą imprezkę!", SANITY, HIGH),
         "no_break": ObjectiveType("Bez Przerwy", "Na co komu odpoczynek?", TIME, LOW),
         "speed_boots": ObjectiveType("Szybkie buty", "Szybkość jest wszystkim!", TIME, MEDIUM),
-        "multitasking": ObjectiveType("Multitasking", "Wiele spraw na raz", TIME, HIGH)
+        "multitasking": ObjectiveType("Multitasking", "Wiele spraw na raz", TIME, HIGH),
+
+        "sesja1": ObjectiveType("Nazwa", "Opis", BIRET, LOW)
     }
 
 for k in objectiveTypes:
@@ -475,6 +485,17 @@ sanity_drain = 1.15
 time_max = 100
 time_current = 100
 time_drain = 1.175
+
+biret_max = 100
+biret_current = 50
+biret_drain = 5
+
+birret_loops = 6
+
+game_time = 0
+session_delay = .1 * 1000 * 60 # 3
+session_duration = 1 * 1000 * 60
+session_state = 0
 
 clock_activated = False
 coffee_activated = False
@@ -546,6 +567,12 @@ def refreshGame():
     global premie_lotne_timer
     global premie_lotne_sprite_timer_duration
     global premie_lotne_chance
+    global game_time
+    global session_state
+    global birret_loops
+    birret_loops = 6
+    game_time = 0
+    session_state = 0
     resetPowerUps()
     objectives[0].setRandom()
     objectives[1].setRandom()
@@ -575,6 +602,7 @@ def setDifficulty(level):
     global premie_lotne_sprite_timer_duration
     global premie_lotne_chance
     global current_game_background
+    global birret_loops
     if level == 0:
         health_drain *= 0.95
         sanity_drain *= 0.95
@@ -582,6 +610,7 @@ def setDifficulty(level):
         current_game_background = game_background
         premie_lotne_sprite_timer_duration *= 1.5
         premie_lotne_chance *= 2
+        birret_loops = 6
     elif level == 2:
         health_drain *= 1.45
         sanity_drain *= 1.45
@@ -589,6 +618,7 @@ def setDifficulty(level):
         current_game_background = Medic_school_difficulty
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
+        birret_loops = 12
 
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
@@ -931,13 +961,17 @@ def renderLegend():
     renderScaled(text_legend_stats_health, centerAnchor(500, 32, 0.25, 0, 100, 256+64))
 
 
-
     renderScaled(sanityicon, centerAnchor(128, 128, 0.25, 0, -320, 384+128))
     renderScaled(text_legend_stats_sanity, centerAnchor(500, 32, 0.25, 0, 100, 384+128))
 
 
     renderScaled(timeicon, centerAnchor(128, 128, 0.25, 0, -320, 512+192))
     renderScaled(text_legend_stats_time, centerAnchor(500, 32, 0.25, 0, 100, 512+192))
+
+
+    renderScaled(bireticon, centerAnchor(128, 128, 0.25, 0, -320, 512+128 + 256))
+    renderScaled(text_legend_stats_biret, centerAnchor(500, 32, 0.25, 0, 100, 512+128 + 256))
+
 
     renderScaled(text_legend_premie_lotne, centerAnchor(256, 48, 0.75, 0, 0, 64))
     renderScaled(text_legend_premie_lotne_desc, centerAnchor(800, 32, 0.75, 0, 0, 128))
@@ -979,6 +1013,7 @@ class Achievement:
     def __init__(self, title, desc, bronze_prize, silver_prize, gold_prize):
         self.title = title
         self.desc = desc
+        self.score = 0
         self.bronze_prize = bronze_prize
         self.silver_prize = silver_prize
         self.gold_prize = gold_prize
@@ -991,43 +1026,42 @@ class Achievement:
         if logged_username == "":
             return "?????????????????"
         else:
-            if level == 0:
-                return self.desc.replace("~", str(self.bronze_prize))
-            elif level == 1:
-                return self.desc.replace("~", str(self.silver_prize))
-            elif level == 2:
-                return self.desc.replace("~", str(self.gold_prize))
-            else:
+            if self.score >= self.gold_prize:
                 return "MAX"
+            elif self.score >= self.silver_prize:
+                return self.desc.replace("~", str(self.gold_prize))
+            elif self.score >= self.bronze_prize:
+                return self.desc.replace("~", str(self.silver_prize))
+            else:
+                return self.desc.replace("~", str(self.bronze_prize))
+
     def getTrophy(self):
-        level = 2
         if logged_username == "":
             return trophy_none
         else:
-            if level == 0:
-                return trophy_none
-            elif level == 1:
-                return trophy_bronze
-            elif level == 2:
-                return trophy_silver
-            else:
+            if self.score >= self.gold_prize:
                 return trophy_gold
+            elif self.score >= self.silver_prize:
+                return trophy_silver
+            elif self.score >= self.bronze_prize:
+                return trophy_bronze
+            else:
+                return trophy_none
 
 achievements =\
 [
-    Achievement("Tytuł", "Zdobądź ~ rzeczy", 5, 10, 15),
-    Achievement("Jan", "Zdobądź ~/64 rzeczy", 69, 99, 100),
-    Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-
-Achievement("Drugi", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
-Achievement("Paweł", "Miej ~ rzeczy", 2137, 9999, 13337),
+    Achievement("Czysta Energia", "Podczas rozgrywki użyj ~ Energetyków", 5, 25, 50),
+    Achievement("Kawa to moje paliwo", "Podczas rozgrywki użyj ~ Kaw", 5, 25, 50),
+    Achievement("Mól książkowy", "Podczas rozgrywki użyj ~ Książek", 5, 25, 50),
+    Achievement("Zegarmistrz światła purpurowy", "Podczas rozgrywki użyj ~ Zegarów", 5, 25, 50),
+    Achievement("Pompa", "Podczas rozgrywki użyj ~ Hantli", 5, 25, 50),
+    Achievement("Bogacz", "Przejdź do następnej sesji z dwoma ubytkami", 1, 1, 1),
+    Achievement("Warunkowy Uczeń", "Przejdź do następnej sesji z jednym ubytkiem", 1, 1, 1),
+    Achievement("Licencjat", "Ukończ studia podyplomowe", 1, 1, 1),
+    Achievement("Haker", "Ukończ studia informatyczne", 1, 1, 1),
+    Achievement("Doktor", "Ukończ studia medyczne", 1, 1, 1),
+    Achievement("Pilny Uczeń", "Przejdź wybrany kierunek studiów bez żadnych ubytków podczas sesji", 1, 1, 1),
+    Achievement("Wieczny Student", "Przetrwaj ~ minut w trybie nieskończonym", 5, 10, 20),
 ]
 
 def renderAchievements():
@@ -1049,52 +1083,77 @@ def renderAchievements():
 
 def renderGame():
     renderScaled(current_game_background, centerAnchor(1920, 1080))
-    #renderScaled(sesja, centerAnchor(196*3, 64*3, 1, 0, -196, 540))
-    renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
+    global game_time, biret_current
+    global biret_max
     global health_current
     global sanity_current
     global time_current
     global gameState
-    fill = health_current / health_max
-    renderScaled(health_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20 - 70))
-    renderScaled(healthbar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70))
-    fill = sanity_current / sanity_max
-    renderScaled(sanity_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20))
-    renderScaled(sanitybar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20))
-    fill = time_current / time_max
-    renderScaled(time_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20 + 70))
-    renderScaled(timebar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 + 70))
+    game_time += timer.get_time()
+    renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
+    if game_time > session_delay:
+        renderScaled(session_overlay, centerAnchor(1920, 1080))
+        renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
+        fill = biret_current / biret_max
+        renderScaled(biret_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20))
+        renderScaled(sanitybar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20))
+        renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20))
+        renderScaled(bireticon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20))
+        if clock_activated:
+            print("freeze")
+        else:
+            time_delta = timer.get_time()
+            biret_current -= biret_drain * (time_delta / 1000)
 
-    renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 - 70))
-    renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20))
-    renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 + 70))
-    renderScaled(healthicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20 - 70))
-    renderScaled(sanityicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20))
-    renderScaled(timeicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20 + 70))
+        if biret_current <= 0:
+            gameState = "game_over"
+            playMusic("maintheme")  # dodać muzykę końca gry\
+            health_current = 100
+            sanity_current = 100
+            time_current = 100
+            biret_current = 50
+    else:
+        fill = health_current / health_max
+        renderScaled(health_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20 - 70))
+        renderScaled(healthbar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 - 70))
+        fill = sanity_current / sanity_max
+        renderScaled(sanity_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20))
+        renderScaled(sanitybar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20))
+        fill = time_current / time_max
+        renderScaled(time_filler, centerAnchor(384 * fill, 64, 0.5, 0, -384 / 2 * (1 - fill), 256 // 2 + 20 + 70))
+        renderScaled(timebar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20 + 70))
+
+        renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 - 70))
+        renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20))
+        renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20 + 70))
+        renderScaled(healthicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20 - 70))
+        renderScaled(sanityicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20))
+        renderScaled(timeicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20 + 70))
+        time_delta = timer.get_time()
+        if clock_activated:
+            print("freeze")
+        else:
+            health_current -= health_drain * (time_delta / 1000)
+            sanity_current -= sanity_drain * (time_delta / 1000)
+            time_current -= time_drain * (time_delta / 1000)
+        if health_current <= 0 or sanity_current <= 0 or time_current <= 0:
+            gameState = "game_over"
+            playMusic("maintheme")  # dodać muzykę końca gry
+            health_current = 100
+            sanity_current = 100
+            time_current = 100
+            biret_current = 50
 
     renderObjectivePaper(0)
     renderObjectivePaper(1)
     renderObjectivePaper(2)
 
-    time_delta = timer.get_time()
-    print(time_delta / 1000)
-    if clock_activated:
-        print("freeze")
-    else:
-        health_current -= health_drain * (time_delta / 1000)
-        sanity_current -= sanity_drain * (time_delta / 1000)
-        time_current -= time_drain * (time_delta / 1000)
-    if health_current <= 0 or sanity_current <= 0 or time_current <= 0:
-        gameState = "game_over"
-        playMusic("maintheme") # dodać muzykę końca gry
-        health_current = 100
-        sanity_current = 100
-        time_current = 100
     x_b.draw()
 
     if premie_lotne_sprite_timer > 0:
         renderScaled(getPowerUpSprite(premie_lotne_type), centerAnchor(128, 128, premie_lotne_x, premie_lotne_y))
-
+    if session_delay * 0.666 < game_time < session_delay:
+        renderScaled(sesja, centerAnchor(196 * 3, 64 * 3, 1, 0, -196, 540))
 def renderDifficultySetter():
     mouse = pygame.mouse.get_pos()
     if centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
@@ -1130,7 +1189,6 @@ def renderDifficultySetter():
 
 def renderGameOver():
     renderScaled(gameover_background.play(), centerAnchor(1920, 1080))
-    #renderScaled(gameover_background, centerAnchor(1920, 1080))
     try_again_b.draw()
     end_game_b.draw()
 
