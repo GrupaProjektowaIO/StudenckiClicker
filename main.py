@@ -333,7 +333,7 @@ class Animation:
 cloud = Animation("cloud", 6, 2.5)
 sun = Animation("Sun", 2, 3)
 smoke = Animation("Smoke", 4, 2)
-gameover_background = Animation("gameover_background", 2, 2)
+gameover_background = Animation("gameover_background", 23, 2)
 
 class Objective:
     def __init__(self):
