@@ -213,10 +213,13 @@ podyplomowe_button = pygame.image.load("sprites/podyplomowe_button.png")
 podyplomowe_button_p = pygame.image.load("sprites/podyplomowe_button_p.png")
 medyczne_button = pygame.image.load("sprites/medyczne_button.png")
 medyczne_button_p = pygame.image.load("sprites/medyczne_button_p.png")
+endless_button = pygame.image.load("sprites/infinite_button.png")
+endless_button_p = pygame.image.load("sprites/infinite_button_p.png")
 # sprites - game
 game_background = pygame.image.load("sprites/game_background.png")
 Computer_science_difficulty = pygame.image.load("sprites/Computer_science_difficulty.png")
 Medic_school_difficulty = pygame.image.load("sprites/Medic_school_difficulty.png")
+endless_background = pygame.image.load("sprites/endless_background.png")
 session_overlay = pygame.image.load("sprites/overlay_red.png")
 board = pygame.image.load("sprites/board.png")
 sesja = pygame.image.load("sprites/sesja.png")
@@ -619,6 +622,14 @@ def setDifficulty(level):
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
         birret_loops = 12
+    elif level == 3:
+        health_drain *= 1.45
+        sanity_drain *= 1.45
+        time_drain *= 1.45
+        current_game_background = endless_background
+        premie_lotne_sprite_timer_duration *= 1
+        premie_lotne_chance *= 1
+        birret_loops = 12
 
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
@@ -744,8 +755,9 @@ class Button:
 #
 x_b = Button(x_button, x_button_p, 64, 64, 1, 0, -32, 32)
 podyplomowe_b = Button(podyplomowe_button,podyplomowe_button_p, 384 * 2, 89 * 1.5, 0.75, 0.25)
-informatyczne_b = Button(informatyczne_button,informatyczne_button_p,384 * 2, 89 * 1.5, 0.75, 0.5)
-medyczne_b = Button(medyczne_button,medyczne_button_p,384 * 2, 89 * 1.5, 0.75, 0.75)
+informatyczne_b = Button(informatyczne_button,informatyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.5/4*4)
+medyczne_b = Button(medyczne_button,medyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.5/4*5)
+endless_b = Button(endless_button, endless_button_p, 384 * 2, 89 * 1.5, 0.75, 0.75 )
 # main menu
 new_game_b = Button(new_game_button, new_game_button_p, 256, 80, 0.5, 0.30, 0, 128 // 2)
 login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 // 2)
@@ -1053,15 +1065,15 @@ achievements =\
     Achievement("Czysta Energia", "Podczas rozgrywki użyj ~ Energetyków", 5, 25, 50),
     Achievement("Kawa to moje paliwo", "Podczas rozgrywki użyj ~ Kaw", 5, 25, 50),
     Achievement("Mól książkowy", "Podczas rozgrywki użyj ~ Książek", 5, 25, 50),
-    Achievement("Zegarmistrz światła purpurowy", "Podczas rozgrywki użyj ~ Zegarów", 5, 25, 50),
-    Achievement("Pompa", "Podczas rozgrywki użyj ~ Hantli", 5, 25, 50),
-    Achievement("Bogacz", "Przejdź do następnej sesji z dwoma ubytkami", 1, 1, 1),
-    Achievement("Warunkowy Uczeń", "Przejdź do następnej sesji z jednym ubytkiem", 1, 1, 1),
+    Achievement("Zegarmistrz", "Podczas rozgrywki użyj ~ Zegarów", 5, 25, 50),
+    Achievement("Trening na pełnej", "Podczas rozgrywki użyj ~ Hantli", 5, 25, 50),
+    Achievement("Bananowy Student", "Przejdź do następnej sesji z 2 ubytkami", 1, 1, 1),
+    Achievement("Warunkowy Student", "Przejdź do następnej sesji z 1 ubytkiem", 1, 1, 1),
     Achievement("Licencjat", "Ukończ studia podyplomowe", 1, 1, 1),
-    Achievement("Haker", "Ukończ studia informatyczne", 1, 1, 1),
-    Achievement("Doktor", "Ukończ studia medyczne", 1, 1, 1),
-    Achievement("Pilny Uczeń", "Przejdź wybrany kierunek studiów bez żadnych ubytków podczas sesji", 1, 1, 1),
-    Achievement("Wieczny Student", "Przetrwaj ~ minut w trybie nieskończonym", 5, 10, 20),
+    Achievement("Anonymous", "Ukończ studia informatyczne", 1, 1, 1),
+    Achievement("Doktor House", "Ukończ studia medyczne", 1, 1, 1),
+    Achievement("Pilny Student", "Przejdź 1 kierunek studiów bez ubytków", 1, 1, 1),
+    Achievement("Wieczny Student", "Przeżyj ~ minut w trybie nieskończonym", 5, 10, 20),
 ]
 
 def renderAchievements():
@@ -1107,7 +1119,7 @@ def renderGame():
 
         if biret_current <= 0:
             gameState = "game_over"
-            playMusic("maintheme")  # dodać muzykę końca gry\
+            playMusic("endtheme")
             health_current = 100
             sanity_current = 100
             time_current = 100
@@ -1185,6 +1197,7 @@ def renderDifficultySetter():
     podyplomowe_b.draw()
     informatyczne_b.draw()
     medyczne_b.draw()
+    endless_b.draw()
     x_b.draw()
 
 def renderGameOver():
@@ -1272,7 +1285,7 @@ while running:
                     playMusic("gametheme")
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
-                    setDifficulty(2)
+                    setDifficulty(3)
                     gameState = "game"
                     playMusic("gametheme")
             elif gameState == "legend":
