@@ -174,14 +174,17 @@ text_dummy = font_title.render("WYBIERZ POZIOM", False, (255, 255, 255))
 text_level_desc_1_dif = font_title.render("Poziom: Łatwy", False, (255, 255, 255))
 text_level_desc_2_dif = font_title.render("Poziom: Średni", False, (255, 255, 255))
 text_level_desc_3_dif = font_title.render("Poziom: Trudny", False, (255, 255, 255))
+text_level_desc_4_dif = font_title.render("Poziom: Zabójczy", False, (255, 255, 255))
 
 text_level_desc_1_len = font_title.render("Długość: 3 lata", False, (255, 255, 255))
 text_level_desc_2_len = font_title.render("Długość: 5 lat", False, (255, 255, 255))
 text_level_desc_3_len = font_title.render("Długość: 6 lat", False, (255, 255, 255))
+text_level_desc_4_len = font_title.render("Długość: Nieskończona", False, (255, 255, 255))
 
 text_level_desc_1_boost = font_title.render("Nagroda: Bonus do Czasu", False, (255, 255, 255))
 text_level_desc_2_boost = font_title.render("Nagroda: Bonus do Zdrowia Psychicznego", False, (255, 255, 255))
 text_level_desc_3_boost = font_title.render("Nagroda: Bonus do Zdrowia Fizycznego", False, (255, 255, 255))
+text_level_desc_4_boost = font_title.render("Nagroda: Chwała i sława na wieczność", False, (255, 255, 255))
 
 text_block_container = pygame.image.load("sprites/text_container.png")
 
@@ -1193,14 +1196,19 @@ def renderDifficultySetter():
         renderScaled(text_level_desc_1_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
         renderScaled(text_level_desc_1_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
         renderScaled(text_level_desc_1_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
-    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.5).collidepoint(mouse[0], mouse[1]):
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.4).collidepoint(mouse[0], mouse[1]):
         renderScaled(text_level_desc_2_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
         renderScaled(text_level_desc_2_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
         renderScaled(text_level_desc_2_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
-    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.55).collidepoint(mouse[0], mouse[1]):
         renderScaled(text_level_desc_3_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
         renderScaled(text_level_desc_3_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
         renderScaled(text_level_desc_3_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
+        renderScaled(text_level_desc_4_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
+        renderScaled(text_level_desc_4_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
+        renderScaled(text_level_desc_4_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
+
     else:
         renderScaled(text_dummy, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
 
@@ -1224,6 +1232,7 @@ def playMusic(name):
     pass
     pygame.mixer.music.load("audio/" + name + ".wav")
     pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.5)
 
 playMusic("maintheme")
 
