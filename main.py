@@ -291,8 +291,6 @@ statbar_mask = pygame.Surface(pygame.image.load("sprites/stat_bar_mask.png").get
 statbar_mask.fill((255, 255, 255))
 
 objective_paper = pygame.image.load("sprites/paper.png")
-objective_panel = pygame.image.load("sprites/objective_panel.png")
-objective_panel_reversed = pygame.image.load("sprites/objective_panel_reversed.png")
 objective_progress_bar = pygame.image.load("sprites/objective_progress_bar.png")
 crystal_red = pygame.image.load("sprites/crystal_red.png")
 crystal_green = pygame.image.load("sprites/crystal_green.png")
@@ -1232,7 +1230,7 @@ def playMusic(name):
     pass
     pygame.mixer.music.load("audio/" + name + ".wav")
     pygame.mixer.music.play(-1)
-    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.set_volume(0.2)
 
 playMusic("maintheme")
 
