@@ -618,7 +618,7 @@ def setDifficulty(level):
         health_drain *= 1.45
         sanity_drain *= 1.45
         time_drain *= 1.45
-        current_game_background = Medic_school_difficulty
+        current_game_background = Computer_science_difficulty
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
         birret_loops = 12
@@ -626,10 +626,19 @@ def setDifficulty(level):
         health_drain *= 1.45
         sanity_drain *= 1.45
         time_drain *= 1.45
+        current_game_background = Medic_school_difficulty
+        premie_lotne_sprite_timer_duration *= 1
+        premie_lotne_chance *= 1
+        birret_loops = 12
+    elif level == 4:
+        health_drain *= 1.45
+        sanity_drain *= 1.45
+        time_drain *= 1.45
         current_game_background = endless_background
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
         birret_loops = 12
+
 
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
                  offset_x=0, offset_y=0):
@@ -755,7 +764,7 @@ class Button:
 #
 x_b = Button(x_button, x_button_p, 64, 64, 1, 0, -32, 32)
 podyplomowe_b = Button(podyplomowe_button,podyplomowe_button_p, 384 * 2, 89 * 1.5, 0.75, 0.25)
-informatyczne_b = Button(informatyczne_button,informatyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.40)
+informatyczne_b = Button(informatyczne_button,informatyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.4)
 medyczne_b = Button(medyczne_button,medyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.55)
 endless_b = Button(endless_button, endless_button_p, 384 * 2, 89 * 1.5, 0.75, 0.7)
 # main menu
