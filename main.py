@@ -1170,12 +1170,12 @@ def renderDifficultySetter():
     mouse = pygame.mouse.get_pos()
     if centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
         renderScaled(game_background, centerAnchor(1920, 1080))
-    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.5).collidepoint(mouse[0], mouse[1]):
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.4).collidepoint(mouse[0], mouse[1]):
         renderScaled(Computer_science_difficulty, centerAnchor(1920, 1080))
-    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.55).collidepoint(mouse[0], mouse[1]):
         renderScaled(Medic_school_difficulty, centerAnchor(1920, 1080))
-    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
-        renderScaled(endless_background, centerAnchor(1920,1080))
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
+        renderScaled(endless_background, centerAnchor(1920, 1080))
     else:
         renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(415 * 2, 256 * 2, 0.25, 0.5, 128, -64))
@@ -1280,14 +1280,19 @@ while running:
                     setDifficulty(0)
                     gameState = "game"
                     playMusic("gametheme")
-                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.5).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.4).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(1)
                     gameState = "game"
                     playMusic("gametheme")
-                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.55).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(3)
+                    gameState = "game"
+                    playMusic("gametheme")
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
+                    refreshGame()
+                    setDifficulty(4)
                     gameState = "game"
                     playMusic("gametheme")
             elif gameState == "legend":
