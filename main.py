@@ -755,9 +755,9 @@ class Button:
 #
 x_b = Button(x_button, x_button_p, 64, 64, 1, 0, -32, 32)
 podyplomowe_b = Button(podyplomowe_button,podyplomowe_button_p, 384 * 2, 89 * 1.5, 0.75, 0.25)
-informatyczne_b = Button(informatyczne_button,informatyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.5/4*4)
-medyczne_b = Button(medyczne_button,medyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.5/4*5)
-endless_b = Button(endless_button, endless_button_p, 384 * 2, 89 * 1.5, 0.75, 0.75 )
+informatyczne_b = Button(informatyczne_button,informatyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.40)
+medyczne_b = Button(medyczne_button,medyczne_button_p, 384 * 2, 89 * 1.5, 0.75, 0.55)
+endless_b = Button(endless_button, endless_button_p, 384 * 2, 89 * 1.5, 0.75, 0.7)
 # main menu
 new_game_b = Button(new_game_button, new_game_button_p, 256, 80, 0.5, 0.30, 0, 128 // 2)
 login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 // 2)
@@ -1174,6 +1174,8 @@ def renderDifficultySetter():
         renderScaled(Computer_science_difficulty, centerAnchor(1920, 1080))
     elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.75).collidepoint(mouse[0], mouse[1]):
         renderScaled(Medic_school_difficulty, centerAnchor(1920, 1080))
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
+        renderScaled(endless_background, centerAnchor(1920,1080))
     else:
         renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(415 * 2, 256 * 2, 0.25, 0.5, 128, -64))
