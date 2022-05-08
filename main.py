@@ -375,6 +375,23 @@ class Objective:
         else:
             self.setType(random.choice(list(objectiveTypes.keys())))
 
+    def setLower(self, sesja=False):
+        if sesja:
+            pass
+        else:
+            if self.objectiveType == "gym":
+                self.setType("healthy_food")
+            elif self.objectiveType == "healthy_food":
+                self.setType("walk")
+            elif self.objectiveType == "party":
+                self.setType("learn")
+            elif self.objectiveType == "learn":
+                self.setType("music")
+            elif self.objectiveType == "multitasking":
+                self.setType("speed_boots")
+            elif self.objectiveType == "speed_boots":
+                self.setType("no_break")
+
     def update(self):
         global premie_lotne_timer
         global premie_lotne_sprite_timer
@@ -504,7 +521,7 @@ session_state = 0
 clock_activated = False
 coffee_activated = False
 energy_drink_activated = False
-premie_lotne_type_amount = 3
+premie_lotne_type_amount = 5
 premie_lotne_timer = 0
 premie_lotne_base_duration = 5000
 premie_lotne_chance = 100
@@ -524,6 +541,10 @@ def getPowerUpSprite(t):
         return coffee
     elif t == 2:
         return energy_drink
+    elif t == 3:
+        return book
+    elif t == 4:
+        return dumbell
 def activatePowerUp(t):
     global clock_activated
     global coffee_activated
@@ -538,6 +559,14 @@ def activatePowerUp(t):
         coffee_activated = True
     elif t == 2:
         energy_drink_activated = True
+    elif t == 3:
+        objectives[0].clicked()
+        objectives[1].clicked()
+        objectives[2].clicked()
+    elif t == 4:
+        objectives[0].setLower()
+        objectives[1].setLower()
+        objectives[2].setLower()
     premie_lotne_sprite_timer = 0
 def resetPowerUps():
     global clock_activated
