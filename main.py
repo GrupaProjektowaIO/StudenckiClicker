@@ -5,6 +5,16 @@ import random
 import json
 import sys, traceback
 
+# KONIEC GRY:
+# PODSTAWOWE: WYNIK JAKO LICZBA UKONCZONYCH SESJI;
+# ENDLESS MODE: WYNIK JAKO CZAS PRZETRWANY;
+# ANTY-POWER-UPY
+# EKRANY ZALICZENIA GIER;
+# DODANIE ELEMENTOW DO 1. POKOJU;
+# OSIAGNIECIA POWIAZANE Z BAZA DANYCH I WYSKAKUJACE INFORMACJE;
+# PANEL LOGOWANIA I MUZYCZKA SESJI <===
+# RANKING TRYBU ENDLESS;
+
 firebaseConfig = {
     "apiKey": "AIzaSyCr7nFZ_7LNowZtxN_jWAaYbjND4RCc4p4",
     "authDomain": "studencki-clicker.firebaseapp.com",
@@ -290,12 +300,14 @@ diffuculty_progress_bar_hard = pygame.image.load('sprites/difficulty_bar_hard.pn
 statbar_mask = pygame.Surface(pygame.image.load("sprites/stat_bar_mask.png").get_size()).convert_alpha()
 statbar_mask.fill((255, 255, 255))
 
-objective_paper = pygame.image.load("sprites/paper.png")
+objective_paper_normal = pygame.image.load("sprites/paper.png")
+objective_paper_endless = pygame.image.load("sprites/endless_paper.png")
+objective_paper = objective_paper_normal
 objective_progress_bar = pygame.image.load("sprites/objective_progress_bar.png")
 crystal_red = pygame.image.load("sprites/crystal_red.png")
 crystal_green = pygame.image.load("sprites/crystal_green.png")
 crystal_blue = pygame.image.load("sprites/crystal_blue.png")
-
+crystal_black = pygame.image.load("sprites/crystal_black.png")
 party = pygame.image.load("sprites/objective_icons/party.png")
 
 book = pygame.image.load("sprites/power_ups/book.png")
@@ -332,6 +344,8 @@ class Animation:
             if self.index >= len(self.frames):
                 self.index = 0
         return self.frames[self.index]
+    def reset(self):
+        self.index = 0
 
 
 cloud = Animation("cloud", 6, 2.5)
@@ -349,9 +363,17 @@ class Objective:
         self.isCompleted = False
         self.timer = 0
         self.drain_cooldown = 0
-
-    def setType(self, type_name):
-        o_type = objectiveTypes[type_name]
+    def isSession(self):
+        if self.crystalType == BIRET:
+            return True
+        else:
+            return False
+    def setType(self, type_name, session=False):
+        o_type = 0
+        if session:
+            o_type = objectiveTypesSession[type_name]
+        else:
+            o_type = objectiveTypes[type_name]
         self.objectiveType = type_name
         self.points = 0
         if o_type.statImpact == LOW:
@@ -371,7 +393,10 @@ class Objective:
 
     def setRandom(self, sesja=False):
         if sesja:
-            pass
+            if self.objectiveType == "egzamin":
+                self.setType("egzamin", True)
+            else:
+                self.setType(random.choice(list(objectiveTypesSession.keys())[1:]), True)
         else:
             self.setType(random.choice(list(objectiveTypes.keys())))
 
@@ -402,7 +427,7 @@ class Objective:
         else:
             self.timer -= timer.get_time()
         if self.isCompleted:
-            self.setRandom()
+            self.setRandom(self.isSession())
         if premie_lotne_timer <= 0:
             resetPowerUps()
         else:
@@ -441,6 +466,12 @@ class Objective:
                 sanity_current += self.addStat
                 if sanity_current > sanity_max:
                     sanity_current = sanity_max
+            elif self.crystalType == BIRET:
+                global biret_current
+                global biret_max
+                biret_current += self.addStat
+                if biret_current > biret_max:
+                    biret_current = biret_max
             else:
                 global time_current
                 global time_max
@@ -472,13 +503,25 @@ objectiveTypes = \
         "no_break": ObjectiveType("Bez Przerwy", "Na co komu odpoczynek?", TIME, LOW),
         "speed_boots": ObjectiveType("Szybkie buty", "Szybkość jest wszystkim!", TIME, MEDIUM),
         "multitasking": ObjectiveType("Multitasking", "Wiele spraw na raz", TIME, HIGH),
-
-        "sesja1": ObjectiveType("Nazwa", "Opis", BIRET, LOW)
+    }
+objectiveTypesSession = \
+    {
+        "egzamin": ObjectiveType("Egzamin", "", BIRET, HIGH),
+        "grupowy": ObjectiveType("Projekt", "", BIRET, LOW),
+        "prezentacja": ObjectiveType("Prezentacja", "", BIRET, LOW),
+        "projekt": ObjectiveType("Projekt Grupowy", "", BIRET, LOW),
+        "test": ObjectiveType("Test", "", BIRET, MEDIUM),
+        "kolokwium": ObjectiveType("Kolokwium", "", BIRET, MEDIUM),
+        "odpytka": ObjectiveType("Odpytka", "", BIRET, MEDIUM)
     }
 
 for k in objectiveTypes:
     objectiveTypes[k].renderedTitle = font_title.render(objectiveTypes[k].title, False, objective_title_color)
     objectiveTypes[k].renderedDesc = font_desc.render(objectiveTypes[k].desc, False, objective_title_color)
+
+for k in objectiveTypesSession:
+    objectiveTypesSession[k].renderedTitle = font_title.render(objectiveTypesSession[k].title, False, objective_title_color)
+    objectiveTypesSession[k].renderedDesc = font_desc.render(objectiveTypesSession[k].desc, False, objective_title_color)
 
 objectives = [
     Objective(), Objective(), Objective()
@@ -511,12 +554,13 @@ biret_max = 100
 biret_current = 50
 biret_drain = 5
 
-birret_loops = 6
+biret_current_loops = 0
+biret_loops = 6
 
 game_time = 0
+session_errors = 0
 session_delay = .1 * 1000 * 60 # 3
 session_duration = 1 * 1000 * 60
-session_state = 0
 
 clock_activated = False
 coffee_activated = False
@@ -601,11 +645,15 @@ def refreshGame():
     global premie_lotne_sprite_timer_duration
     global premie_lotne_chance
     global game_time
-    global session_state
-    global birret_loops
-    birret_loops = 6
+    global biret_loops
+    global objective_paper
+    global session_errors
+    global birret_current_loops
+    birret_current_loops = 0
+    session_errors = 0
+    objective_paper = objective_paper_normal
+    biret_loops = 6
     game_time = 0
-    session_state = 0
     resetPowerUps()
     objectives[0].setRandom()
     objectives[1].setRandom()
@@ -627,7 +675,7 @@ def refreshGame():
     premie_lotne_sprite_timer = 0
     premie_lotne_sprite_timer_duration = 1000
     premie_lotne_chance = 2
-
+current_difficulty = 0
 def setDifficulty(level):
     global health_drain
     global sanity_drain
@@ -635,7 +683,11 @@ def setDifficulty(level):
     global premie_lotne_sprite_timer_duration
     global premie_lotne_chance
     global current_game_background
-    global birret_loops
+    global biret_loops
+    global objective_paper
+    global current_difficulty
+    current_difficulty = level
+    playMusic("gametheme")
     if level == 0:
         health_drain *= 0.95
         sanity_drain *= 0.95
@@ -643,31 +695,25 @@ def setDifficulty(level):
         current_game_background = game_background
         premie_lotne_sprite_timer_duration *= 1.5
         premie_lotne_chance *= 2
-        birret_loops = 6
+        biret_loops = 6
     elif level == 2:
-        health_drain *= 1.45
-        sanity_drain *= 1.45
-        time_drain *= 1.45
-        current_game_background = Computer_science_difficulty
-        premie_lotne_sprite_timer_duration *= 1
-        premie_lotne_chance *= 1
-        birret_loops = 12
-    elif level == 3:
         health_drain *= 1.45
         sanity_drain *= 1.45
         time_drain *= 1.45
         current_game_background = Medic_school_difficulty
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
-        birret_loops = 12
-    elif level == 4:
+        biret_loops = 12
+    elif level == 3:
         health_drain *= 1.45
         sanity_drain *= 1.45
         time_drain *= 1.45
         current_game_background = endless_background
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
-        birret_loops = 12
+        biret_loops = 12
+        objective_paper = objective_paper_endless
+        playMusic("endlesstheme")
 
 
 def centerAnchor(width, height, percent_x=0.5, percent_y=0.5,
@@ -688,7 +734,7 @@ text_timer = 0
 last_key = 0
 
 text_caret = 0
-def renderTextBox(index, rect):
+def renderTextBox(index, rect, encrypted=False):
     global active_text_box
     global text_timer
     global last_key
@@ -752,8 +798,15 @@ def renderTextBox(index, rect):
     if text_timer >= 0:
         text_timer -= timer.get_time()
 
-    render = font.render(text, False, (0, 0, 0))
-    screen.blit(render, (rect.x + 5, rect.y + 5))
+    render = 0
+    if encrypted:
+        s = ""
+        for i in range(len(text)):
+            s = s + "*"
+        render = font.render(s, False, (0,0,0))
+    else:
+        render = font.render(text, False, (0, 0, 0))
+    screen.blit(render, (rect.x + 10, rect.y + 5))
     text_boxes[index] = text
 
 
@@ -818,7 +871,11 @@ try_again_b = Button(try_again_button,try_again_button_p, 256+96, 80, 0.5, 1, -2
 end_game_b = Button(end_game_button,end_game_button_p, 256, 80, 0.5, 1, 256, -64)
 
 def renderObjectivePaper(index=0):
-    o_type = objectiveTypes[objectives[index].objectiveType]
+    o_type = 0
+    if objectives[index].isSession():
+        o_type = objectiveTypesSession[objectives[index].objectiveType]
+    else:
+        o_type = objectiveTypes[objectives[index].objectiveType]
     offset_x = 0
     if index == 0:
         offset_x = -82 * 3.5 - 50
@@ -841,8 +898,10 @@ def renderObjectivePaper(index=0):
         filler = health_filler
     elif objectives[index].crystalType == 1:
         renderScaled(crystal_blue, centerAnchor(32, 32, 0.5, 1, offset_x, -170 - 12))
-
         filler = sanity_filler
+    elif objectives[index].crystalType == 3:
+        renderScaled(crystal_black, centerAnchor(32, 32, 0.5, 1, offset_x, -170 - 12))
+        filler = biret_filler
     else:
         renderScaled(crystal_green, centerAnchor(32, 32, 0.5, 1, offset_x, -170 - 12))
 
@@ -957,11 +1016,11 @@ def renderLoginPanel():
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
     renderScaled(smoke.play(), centerAnchor(48 * 4, 48 * 4, 0.955, 0.45))
-    renderScaled(login_panel, centerAnchor(576, 768, 0.5, 0.3375, 0, 128 // 2))
+    renderScaled(login_panel, centerAnchor(750, 768, 0.5, 0.3375, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70+32))
-    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2+32))
+    renderTextBox("username", centerAnchor(512, 70, 0.5, 0.075, 0, 128 // 2+32))
     renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100+32))
-    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30+32))
+    renderTextBox("password", centerAnchor(512, 70, 0.5, 0.225, 0, 128 // 2 - 30+32), True)
     login_b.draw()
     login_back_b.draw()
     register_enter_b.draw()
@@ -981,11 +1040,11 @@ def renderRegisterPanel():
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.9, 0.2))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.8, 0.4))
     renderScaled(smoke.play(), centerAnchor(48 * 4, 48 * 4, 0.955, 0.45))
-    renderScaled(login_panel, centerAnchor(576, 768, 0.5, 0.3375, 0, 128 // 2))
+    renderScaled(login_panel, centerAnchor(750, 768, 0.5, 0.3375, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70+32))
-    renderTextBox("username", centerAnchor(256, 70, 0.5, 0.075, 0, 128 // 2+32))
+    renderTextBox("username", centerAnchor(512, 70, 0.5, 0.075, 0, 128 // 2+32))
     renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100+32))
-    renderTextBox("password", centerAnchor(256, 70, 0.5, 0.225, 0, 128 // 2 - 30+32))
+    renderTextBox("password", centerAnchor(512, 70, 0.5, 0.225, 0, 128 // 2 - 30+32), True)
     register_b.draw()
     register_back_b.draw()
     if register_back_b.pressed:
@@ -1140,9 +1199,16 @@ def renderGame():
     global sanity_current
     global time_current
     global gameState
+    global birret_current_loops
     game_time += timer.get_time()
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
     if game_time > session_delay:
+        if not objectives[0].isSession():
+            biret_current = 50
+            objectives[0].setRandom(True)
+            objectives[1].setType("egzamin", True)
+            objectives[2].setRandom(True)
+            setDifficulty(current_difficulty)
         renderScaled(session_overlay, centerAnchor(1920, 1080))
         renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
         fill = biret_current / biret_max
@@ -1158,6 +1224,7 @@ def renderGame():
 
         if biret_current <= 0:
             gameState = "game_over"
+
             playMusic("endtheme")
             health_current = 100
             sanity_current = 100
@@ -1189,6 +1256,7 @@ def renderGame():
             time_current -= time_drain * (time_delta / 1000)
         if health_current <= 0 or sanity_current <= 0 or time_current <= 0:
             gameState = "game_over"
+            gameover_background.reset()
             playMusic("endtheme")  # dodać muzykę końca gry
             health_current = 100
             sanity_current = 100
@@ -1203,8 +1271,30 @@ def renderGame():
 
     if premie_lotne_sprite_timer > 0:
         renderScaled(getPowerUpSprite(premie_lotne_type), centerAnchor(128, 128, premie_lotne_x, premie_lotne_y))
-    if session_delay * 0.666 < game_time < session_delay:
+    if 60 * 1000 < game_time < session_delay:
         renderScaled(sesja, centerAnchor(196 * 3, 64 * 3, 1, 0, -196, 540))
+    if game_time > session_duration + session_delay:
+        global biret_current_loops
+        global session_errors
+        objectives[0].setRandom()
+        objectives[1].setRandom()
+        objectives[2].setRandom()
+        setDifficulty(current_difficulty)
+        game_time = 0
+        biret_current_loops += 1
+        if biret_current < biret_max * 0.5:
+            gameState = "game_over"
+            gameover_background.reset()
+            playMusic("endtheme")
+            health_current = 100
+            sanity_current = 100
+            time_current = 100
+            biret_current = 50
+        elif biret_current < biret_max * 0.625:
+            session_errors += 2
+        elif biret_current < biret_max * 0.75:
+            session_errors += 1
+
 def renderDifficultySetter():
     mouse = pygame.mouse.get_pos()
     if centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
@@ -1259,7 +1349,7 @@ def playMusic(name):
     pass
     pygame.mixer.music.load("audio/" + name + ".wav")
     pygame.mixer.music.play(-1)
-    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.set_volume(0.5)
 
 playMusic("maintheme")
 
@@ -1324,27 +1414,23 @@ while running:
                     refreshGame()
                     setDifficulty(0)
                     gameState = "game"
-                    playMusic("gametheme")
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.4).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(1)
                     gameState = "game"
-                    playMusic("gametheme")
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.55).collidepoint(mouse[0], mouse[1]):
+                    refreshGame()
+                    setDifficulty(2)
+                    gameState = "game"
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(3)
                     gameState = "game"
-                    playMusic("gametheme")
-                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
-                    refreshGame()
-                    setDifficulty(4)
-                    gameState = "game"
-                    playMusic("gametheme")
             elif gameState == "legend":
-                if centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
             elif gameState == "achievements":
-                if centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
             elif gameState == "game_over":
                 if centerAnchor(256 + 96, 80, 0.5, 1, -256, -64).collidepoint(mouse[0], mouse[1]):
@@ -1355,7 +1441,7 @@ while running:
                     playMusic("maintheme")
             elif gameState == "game":
                 if energy_drink_activated:
-                    if centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
+                    if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                         gameState = "main_menu"
                         playMusic("maintheme")
                     else:
@@ -1370,7 +1456,7 @@ while running:
                         objectives[1].clicked()
                     elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 82 * 3.5 + 50, -102 * 1.75).collidepoint(mouse[0],mouse[1]):
                         objectives[2].clicked()
-                    elif centerAnchor(100, 100, 1, 0).collidepoint(mouse[0], mouse[1]):
+                    elif centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                         gameState = "main_menu"
                         playMusic("maintheme")
                     elif centerAnchor(128, 128, premie_lotne_x, premie_lotne_y).collidepoint(mouse[0],mouse[1]):
