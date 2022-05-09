@@ -12,7 +12,6 @@ import sys, traceback
 # EKRANY ZALICZENIA GIER;
 # DODANIE ELEMENTOW DO 1. POKOJU;
 # OSIAGNIECIA POWIAZANE Z BAZA DANYCH I WYSKAKUJACE INFORMACJE;
-# PANEL LOGOWANIA I MUZYCZKA SESJI <===
 # RANKING TRYBU ENDLESS;
 
 firebaseConfig = {
@@ -560,7 +559,8 @@ biret_loops = 6
 game_time = 0
 session_errors = 0
 session_delay = .1 * 1000 * 60 # 3
-session_duration = 1 * 1000 * 60
+session_duration = .1 * 1000 * 60
+isSession = False
 
 clock_activated = False
 coffee_activated = False
@@ -686,6 +686,8 @@ def setDifficulty(level):
     global biret_loops
     global objective_paper
     global current_difficulty
+    global isSession
+    isSession = False
     current_difficulty = level
     playMusic("gametheme")
     if level == 0:
@@ -761,7 +763,7 @@ def renderTextBox(index, rect, encrypted=False):
     ks = pygame.key.get_pressed()
     if active_text_box == index:
         if text_caret < 250:
-            renderScaled(pixel, pygame.Rect(rect.x+12 + len(text) * 12, rect.y+12, 4, rect.h-24))
+            renderScaled(pixel, pygame.Rect(rect.x+12 + min(len(text),32) * 12, rect.y+12, 4, rect.h-24))
         text_caret += timer.get_time()
         if text_caret > 500:
             text_caret = 0
@@ -799,13 +801,14 @@ def renderTextBox(index, rect, encrypted=False):
         text_timer -= timer.get_time()
 
     render = 0
+    s = ""
     if encrypted:
-        s = ""
         for i in range(len(text)):
             s = s + "*"
-        render = font.render(s, False, (0,0,0))
     else:
-        render = font.render(text, False, (0, 0, 0))
+        s = text
+    s = s[-32:]
+    render = font.render(s, False, (0, 0, 0))
     screen.blit(render, (rect.x + 10, rect.y + 5))
     text_boxes[index] = text
 
@@ -1200,6 +1203,7 @@ def renderGame():
     global time_current
     global gameState
     global birret_current_loops
+    global isSession
     game_time += timer.get_time()
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
     if game_time > session_delay:
@@ -1209,6 +1213,9 @@ def renderGame():
             objectives[1].setType("egzamin", True)
             objectives[2].setRandom(True)
             setDifficulty(current_difficulty)
+        if not isSession:
+            isSession = True
+            playMusic("redthemeclock")
         renderScaled(session_overlay, centerAnchor(1920, 1080))
         renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
         fill = biret_current / biret_max
