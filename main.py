@@ -8,7 +8,6 @@ import sys, traceback
 # KONIEC GRY:
 # PODSTAWOWE: WYNIK JAKO LICZBA UKONCZONYCH SESJI;
 # ENDLESS MODE: WYNIK JAKO CZAS PRZETRWANY;
-# ANTY-POWER-UPY
 # EKRANY ZALICZENIA GIER;
 # DODANIE ELEMENTOW DO 1. POKOJU;
 # OSIAGNIECIA POWIAZANE Z BAZA DANYCH I WYSKAKUJACE INFORMACJE;
@@ -174,6 +173,12 @@ text_achievements = font_menu_button.render("Osiągnięcia", False, (0, 0, 0))
 text_back = font_menu_button.render("Powrót", False, (0, 0, 0))
 text_exit = font_menu_button.render("Wyjście", False, (0, 0, 0))
 
+dialog0 = font_menu_button.render("W końcu zdałem maturę!", False, (255, 255, 0))
+dialog1 = font_menu_button.render("Studia stoją przede mną otworem.", False, (255, 255, 0))
+dialog2 = font_menu_button.render("To będzie najlepszy czas w moim życiu.", False, (255, 255, 0))
+dialog3 = font_menu_button.render("(Prawda?)", False, (255, 255, 0))
+dialog_adv = font_menu_button.render("Kliknij, by przejść dalej", False, (0, 0, 0))
+
 text_podyplomowe = font_menu_button.render("Studia Podyplomowe", False, (0, 0, 0))  # poziom latwy
 text_informatyka = font_menu_button.render("Studia Informatyczne", False, (0, 0, 0))  # poziom medium
 text_medycyna = font_menu_button.render("Studia Medyczne", False, (0, 0, 0))  # poziom hard
@@ -199,6 +204,7 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 
 # sprites - main menu
 pixel = pygame.image.load("sprites/pixel.png")
+pixel_white = pygame.image.load("sprites/pixel_white.png")
 cursor = pygame.image.load("sprites/cursor.png")
 x_button = pygame.image.load("sprites/x_button.png")
 x_button_p = pygame.image.load("sprites/x_button_p.png")
@@ -232,6 +238,9 @@ game_background = pygame.image.load("sprites/game_background.png")
 Computer_science_difficulty = pygame.image.load("sprites/Computer_science_difficulty.png")
 Medic_school_difficulty = pygame.image.load("sprites/Medic_school_difficulty.png")
 endless_background = pygame.image.load("sprites/endless_background.png")
+game_background_opening = pygame.image.load("sprites/game_background.png")
+Computer_science_difficulty_opening = pygame.image.load("sprites/game_background.png")
+Medic_school_difficulty_opening = pygame.image.load("sprites/game_background.png")
 session_overlay = pygame.image.load("sprites/overlay_red.png")
 board = pygame.image.load("sprites/board.png")
 sesja = pygame.image.load("sprites/sesja.png")
@@ -350,6 +359,9 @@ class Animation:
 cloud = Animation("cloud", 6, 2.5)
 sun = Animation("Sun", 2, 3)
 smoke = Animation("Smoke", 4, 2)
+game_opening_easy = Animation("game_opening_easy", 6, 3)
+game_opening_medium = Animation("game_opening_medium", 6, 3)
+game_opening_hard = Animation("game_opening_hard", 6, 3)
 gameover_background = Animation("gameover_background", 23, 2)
 
 class Objective:
@@ -439,15 +451,19 @@ class Objective:
         global premie_lotne_type
         global premie_lotne_sprite_timer
         global premie_lotne_sprite_timer_duration
+        global premie_lotne_is_negative
         if premie_lotne_sprite_timer <= 0 and premie_lotne_timer <= 0 and random.random() * 100 < premie_lotne_chance:
+            premie_lotne_is_negative = random.randrange(0, 100) < premie_lotne_negative_chance
             premie_lotne_x = 0.4 + random.random() / 5
             premie_lotne_y = 0.4 + random.random() / 5
             premie_lotne_type = random.choice(range(premie_lotne_type_amount))
             premie_lotne_sprite_timer = premie_lotne_sprite_timer_duration
         self.timer = self.drain_cooldown
         if coffee_activated:
-            self.points += 2
-            # kawa power up
+            if premie_lotne_is_negative:
+                self.points += 0.5
+            else:
+                self.points += 2
         else:
             self.points += 1
         if self.points >= self.pointsToComplete:
@@ -558,8 +574,8 @@ biret_loops = 6
 
 game_time = 0
 session_errors = 0
-session_delay = .1 * 1000 * 60 # 3
-session_duration = .1 * 1000 * 60
+session_delay = 2 * 1000 * 60 # 3
+session_duration = 1 * 1000 * 60
 isSession = False
 
 clock_activated = False
@@ -569,6 +585,8 @@ premie_lotne_type_amount = 5
 premie_lotne_timer = 0
 premie_lotne_base_duration = 5000
 premie_lotne_chance = 100
+premie_lotne_negative_chance = 50
+premie_lotne_is_negative = False
 premie_lotne_x = 0
 premie_lotne_y = 0
 premie_lotne_type = 0
@@ -579,22 +597,39 @@ def getPowerUpSprite(t):
     global clock_activated
     global coffee_activated
     global energy_drink_activated
-    if t == 0:
-        return clock
-    elif t == 1:
-        return coffee
-    elif t == 2:
-        return energy_drink
-    elif t == 3:
-        return book
-    elif t == 4:
-        return dumbell
+    if premie_lotne_is_negative:
+        if t == 0:
+            return anticlock
+        elif t == 1:
+            return anticoffee
+        elif t == 2:
+            return antienergy_drink
+        elif t == 3:
+            return antibook
+        elif t == 4:
+            return antidumbell
+    else:
+        if t == 0:
+            return clock
+        elif t == 1:
+            return coffee
+        elif t == 2:
+            return energy_drink
+        elif t == 3:
+            return book
+        elif t == 4:
+            return dumbell
 def activatePowerUp(t):
     global clock_activated
     global coffee_activated
     global energy_drink_activated
     global premie_lotne_sprite_timer
     global premie_lotne_timer
+    global premie_lotne_is_negative
+    global premie_lotne_x
+    global premie_lotne_y
+    premie_lotne_x = 10000
+    premie_lotne_y = 10000
     premie_lotne_timer = premie_lotne_base_duration
     premie_lotne_sprite_timer = -1
     if t == 0:
@@ -604,9 +639,17 @@ def activatePowerUp(t):
     elif t == 2:
         energy_drink_activated = True
     elif t == 3:
-        objectives[0].clicked()
-        objectives[1].clicked()
-        objectives[2].clicked()
+        if premie_lotne_is_negative:
+            objectives[0].points = 0
+            objectives[1].points = 0
+            objectives[2].points = 0
+        else:
+            objectives[0].points = 10000
+            objectives[1].points = 10000
+            objectives[2].points = 10000
+            objectives[0].clicked()
+            objectives[1].clicked()
+            objectives[2].clicked()
     elif t == 4:
         objectives[0].setLower()
         objectives[1].setLower()
@@ -649,6 +692,8 @@ def refreshGame():
     global objective_paper
     global session_errors
     global birret_current_loops
+    global dialog
+    dialog = 0
     birret_current_loops = 0
     session_errors = 0
     objective_paper = objective_paper_normal
@@ -1223,15 +1268,16 @@ def renderGame():
         renderScaled(sanitybar, centerAnchor(384, 64, 0.5, 0, 0, 256 // 2 + 20))
         renderScaled(deathicon, centerAnchor(32, 32, 0.5, 0, -216, 256 // 2 + 20))
         renderScaled(bireticon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20))
+        time_delta = timer.get_time()
         if clock_activated:
-            print("freeze")
-        else:
-            time_delta = timer.get_time()
-            biret_current -= biret_drain * (time_delta / 1000)
+            if premie_lotne_is_negative:
+                time_delta *= 2
+            else:
+                time_delta = 0
+        biret_current -= biret_drain * (time_delta / 1000)
 
         if biret_current <= 0:
             gameState = "game_over"
-
             playMusic("endtheme")
             health_current = 100
             sanity_current = 100
@@ -1256,11 +1302,13 @@ def renderGame():
         renderScaled(timeicon, centerAnchor(32, 32, 0.5, 0, 216, 256 // 2 + 20 + 70))
         time_delta = timer.get_time()
         if clock_activated:
-            print("freeze")
-        else:
-            health_current -= health_drain * (time_delta / 1000)
-            sanity_current -= sanity_drain * (time_delta / 1000)
-            time_current -= time_drain * (time_delta / 1000)
+            if premie_lotne_is_negative:
+                time_delta *= 2
+            else:
+                time_delta = 0
+        health_current -= health_drain * (time_delta / 1000)
+        sanity_current -= sanity_drain * (time_delta / 1000)
+        time_current -= time_drain * (time_delta / 1000)
         if health_current <= 0 or sanity_current <= 0 or time_current <= 0:
             gameState = "game_over"
             gameover_background.reset()
@@ -1343,6 +1391,29 @@ def renderDifficultySetter():
     endless_b.draw()
     x_b.draw()
 
+dialog = 0
+def renderOpening():
+    global gameState
+    if current_difficulty == 0:
+        renderScaled(game_opening_easy.play(), centerAnchor(1920, 1080))
+    elif current_difficulty == 1:
+        renderScaled(game_opening_medium.play(), centerAnchor(1920, 1080))
+    elif current_difficulty == 2:
+        renderScaled(game_opening_hard.play(), centerAnchor(1920, 1080))
+    renderScaled(pixel_white, centerAnchor(130 * 4, 55 * 0.618 * 4, 1, 1, -260, -400))
+    renderScaled(pixel, centerAnchor(125 * 4,50 * 0.618 * 4, 1, 1, -260, -400))
+    renderScaled(dialog_adv, centerAnchor(90 * 4, 64, 1, 1, -260, -300))
+    if dialog == 0:
+        renderScaled(dialog0, centerAnchor(115 * 4, 98, 1, 1, -260, -400))
+    elif dialog == 1:
+        renderScaled(dialog1, centerAnchor(120 * 4, 64, 1, 1, -260, -400))
+    elif dialog == 2:
+        renderScaled(dialog2, centerAnchor(120 * 4, 64, 1, 1, -260, -400))
+    elif dialog == 3:
+        renderScaled(dialog3, centerAnchor(120 * 4, 98, 1, 1, -260, -400))
+    elif dialog == 4:
+        gameState = "game"
+
 def renderGameOver():
     renderScaled(gameover_background.play(), centerAnchor(1920, 1080))
     try_again_b.draw()
@@ -1378,6 +1449,8 @@ while running:
         renderGameOver()
     elif gameState == "game":
         renderGame()
+    elif gameState == "opening":
+        renderOpening()
     mpose = pygame.mouse.get_pos()
     if infoObject.current_w == 1920: #zamienilem ">" na "==" bo u mnie w zlym miejscu jest ten kursor ~KubaK xD
         renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0] + 32, mpose[1] + 32))
@@ -1420,19 +1493,21 @@ while running:
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(0)
-                    gameState = "game"
+                    gameState = "opening"
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.4).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(1)
-                    gameState = "game"
+                    gameState = "opening"
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.55).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(2)
-                    gameState = "game"
+                    gameState = "opening"
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(3)
                     gameState = "game"
+            elif gameState == "opening":
+                dialog += 1
             elif gameState == "legend":
                 if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
@@ -1452,16 +1527,17 @@ while running:
                         gameState = "main_menu"
                         playMusic("maintheme")
                     else:
-                        objectives[0].clicked()
-                        objectives[1].clicked()
-                        objectives[2].clicked()
+                        if not premie_lotne_is_negative:
+                            objectives[0].clicked()
+                            objectives[1].clicked()
+                            objectives[2].clicked()
 
                 else:
-                    if centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, -82 * 3.5 - 50, -102 * 1.75).collidepoint(mouse[0],mouse[1]):
+                    if centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, -82 * 3.5 - 50, -102 * 1.75).collidepoint(mouse[0],mouse[1]) and not energy_drink_activated:
                         objectives[0].clicked()
-                    elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 0, -102 * 1.75).collidepoint(mouse[0], mouse[1]):
+                    elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 0, -102 * 1.75).collidepoint(mouse[0], mouse[1]) and not energy_drink_activated:
                         objectives[1].clicked()
-                    elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 82 * 3.5 + 50, -102 * 1.75).collidepoint(mouse[0],mouse[1]):
+                    elif centerAnchor(82 * 3.5, 102 * 3.5, 0.5, 1, 82 * 3.5 + 50, -102 * 1.75).collidepoint(mouse[0],mouse[1]) and not energy_drink_activated:
                         objectives[2].clicked()
                     elif centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                         gameState = "main_menu"
