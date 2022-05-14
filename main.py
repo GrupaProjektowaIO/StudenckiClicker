@@ -179,6 +179,12 @@ dialog2 = font_menu_button.render("To będzie najlepszy czas w moim życiu.", Fa
 dialog3 = font_menu_button.render("(Prawda?)", False, (255, 255, 0))
 dialog_adv = font_menu_button.render("Kliknij, by przejść dalej", False, (0, 0, 0))
 
+dialog0_endless = font_menu_button.render("* otwierasz oczy *", False, (255, 255, 0))
+dialog1_endless = font_menu_button.render("* widzisz przed sobą książki i kraty *", False, (255, 255, 0))
+dialog2_endless = font_menu_button.render("* właśnie zaczyna się twój studencki koszmar *", False, (255, 255, 0))
+dialog3_endless = font_menu_button.render("* powodzenia >:D *", False, (255, 255, 0))
+dialog_adv_endless = font_menu_button.render("Kliknij, by przejść dalej", False, (255, 0, 0))
+
 text_podyplomowe = font_menu_button.render("Studia Podyplomowe", False, (0, 0, 0))  # poziom latwy
 text_informatyka = font_menu_button.render("Studia Informatyczne", False, (0, 0, 0))  # poziom medium
 text_medycyna = font_menu_button.render("Studia Medyczne", False, (0, 0, 0))  # poziom hard
@@ -362,7 +368,9 @@ smoke = Animation("Smoke", 4, 2)
 game_opening_easy = Animation("game_opening_easy", 6, 3)
 game_opening_medium = Animation("game_opening_medium", 6, 3)
 game_opening_hard = Animation("game_opening_hard", 6, 3)
+game_opening_endless = Animation("game_opening_endless", 5, 3)
 gameover_background = Animation("gameover_background", 23, 2)
+win_background = Animation("win_background", 6, 3)
 
 class Objective:
     def __init__(self):
@@ -1349,6 +1357,8 @@ def renderGame():
             session_errors += 2
         elif biret_current < biret_max * 0.75:
             session_errors += 1
+        if biret_current_loops == biret_loops:
+            gameState = "win"
 
 def renderDifficultySetter():
     mouse = pygame.mouse.get_pos()
@@ -1400,25 +1410,47 @@ def renderOpening():
         renderScaled(game_opening_medium.play(), centerAnchor(1920, 1080))
     elif current_difficulty == 2:
         renderScaled(game_opening_hard.play(), centerAnchor(1920, 1080))
-    renderScaled(pixel_white, centerAnchor(130 * 4, 55 * 0.618 * 4, 1, 1, -260, -400))
-    renderScaled(pixel, centerAnchor(125 * 4,50 * 0.618 * 4, 1, 1, -260, -400))
-    renderScaled(dialog_adv, centerAnchor(90 * 4, 64, 1, 1, -260, -300))
-    if dialog == 0:
-        renderScaled(dialog0, centerAnchor(115 * 4, 98, 1, 1, -260, -400))
-    elif dialog == 1:
-        renderScaled(dialog1, centerAnchor(120 * 4, 64, 1, 1, -260, -400))
-    elif dialog == 2:
-        renderScaled(dialog2, centerAnchor(120 * 4, 64, 1, 1, -260, -400))
-    elif dialog == 3:
-        renderScaled(dialog3, centerAnchor(120 * 4, 98, 1, 1, -260, -400))
-    elif dialog == 4:
-        gameState = "game"
+    elif current_difficulty == 3:
+        renderScaled(game_opening_endless.play(), centerAnchor(1920, 1080))
+    if current_difficulty == 3:
+        renderScaled(pixel_white, centerAnchor(175 * 4, 75 * 0.618 * 4, 0.5, 1, 0, -550))
+        renderScaled(pixel, centerAnchor(170 * 4,70 * 0.618 * 4, 0.5, 1, 0, -550))
+        renderScaled(dialog_adv_endless, centerAnchor(120 * 4, 84, 0.5, 1, 0, -425))
+        if dialog == 0:
+            renderScaled(dialog0_endless, centerAnchor(160 * 4, 98, 0.5, 1, 0, -550))
+        elif dialog == 1:
+            renderScaled(dialog1_endless, centerAnchor(160 * 4, 64, 0.5, 1, 0, -550))
+        elif dialog == 2:
+            renderScaled(dialog2_endless, centerAnchor(160 * 4, 64, 0.5, 1, 0, -550))
+        elif dialog == 3:
+            renderScaled(dialog3_endless, centerAnchor(160 * 4, 98, 0.5, 1, 0, -550))
+        elif dialog == 4:
+            gameState = "game"
+    else:
+        renderScaled(pixel_white, centerAnchor(130 * 4, 55 * 0.618 * 4, 1, 1, -260, -400))
+        renderScaled(pixel, centerAnchor(125 * 4, 50 * 0.618 * 4, 1, 1, -260, -400))
+        renderScaled(dialog_adv, centerAnchor(90 * 4, 64, 1, 1, -260, -300))
+        if dialog == 0:
+            renderScaled(dialog0, centerAnchor(115 * 4, 98, 1, 1, -260, -400))
+        elif dialog == 1:
+            renderScaled(dialog1, centerAnchor(120 * 4, 64, 1, 1, -260, -400))
+        elif dialog == 2:
+            renderScaled(dialog2, centerAnchor(120 * 4, 64, 1, 1, -260, -400))
+        elif dialog == 3:
+            renderScaled(dialog3, centerAnchor(120 * 4, 98, 1, 1, -260, -400))
+        elif dialog == 4:
+            gameState = "game"
 
 def renderGameOver():
     renderScaled(gameover_background.play(), centerAnchor(1920, 1080))
     try_again_b.draw()
     end_game_b.draw()
-
+def renderWin():
+    renderScaled(win_background.play(), centerAnchor(1920, 1080))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.3, 0.8))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.1, 0.8))
+    renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.2, 0.6))
+    #playMusic("wintheme")
 
 gameState = "main_menu"
 running = True
@@ -1451,6 +1483,8 @@ while running:
         renderGame()
     elif gameState == "opening":
         renderOpening()
+    elif gameState == "win":
+        renderWin()
     mpose = pygame.mouse.get_pos()
     if infoObject.current_w == 1920: #zamienilem ">" na "==" bo u mnie w zlym miejscu jest ten kursor ~KubaK xD
         renderScaled(cursor, centerAnchor(64, 64, 0, 0, mpose[0] + 32, mpose[1] + 32))
@@ -1505,7 +1539,7 @@ while running:
                 elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
                     refreshGame()
                     setDifficulty(3)
-                    gameState = "game"
+                    gameState = "opening"
             elif gameState == "opening":
                 dialog += 1
             elif gameState == "legend":
