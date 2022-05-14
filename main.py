@@ -65,7 +65,7 @@ def login(email, password):
 # Rejestracja
 
 
-def signUp(email, password):
+def signUp(email, nick, password):
     global logged_username
     global gameState
     global announcement
@@ -116,7 +116,6 @@ def dbGetHighscore():
     for highscore in reversed(highscores.each()):
         print(highscore.val())
 
-
 # enums
 HEALTH = 0
 SANITY = 1
@@ -165,6 +164,7 @@ font_menu_button = pygame.font.Font('fonts/VT323-Regular.ttf', 24)
 text_play = font_menu_button.render("Nowa Gra", False, (0, 0, 0))
 text_login = font_menu_button.render("Logowanie", False, (0, 0, 0))
 text_username = font_menu_button.render("Login: ", False, (144, 164, 174))
+text_nick = font_menu_button.render("Nick: ", False, (144, 164, 174))
 text_password = font_menu_button.render("Hasło: ", False, (144, 164, 174))
 text_log_in = font_menu_button.render("Zaloguj się", False, (0, 0, 0))
 text_register2 = font_menu_button.render("Zarejestruj się", False, (0, 0, 0))
@@ -550,13 +550,6 @@ objectives = [
     Objective(), Objective(), Objective()
 ]
 
-"""objectives[0].setType("walk")
-objectives[1].setType("learn")
-objectives[2].setType("speed_boots")
-objectives[3].setType("gym")
-objectives[4].setType("music")
-objectives[5].setType("no_break")"""
-
 objectives[0].setRandom()
 objectives[1].setRandom()
 objectives[2].setRandom()
@@ -673,6 +666,7 @@ def resetPowerUps():
 active_text_box = ""
 text_boxes = {
     "username": "",
+    "nick": "",
     "password": ""
 }
 
@@ -918,8 +912,8 @@ login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 //
 register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2+32)
 
 # register
-register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.3, 0, 128 // 2 - 30+32)
-register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 0, 128 // 2+32)
+register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.45, 0, 128 // 2 - 30+32)
+register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.55, 0, 128 // 2+32)
 
 # legend
 tooltip_b = Button(tooltip_button,tooltip_button_p, 256, 80, 0.5, 0.5, 0, 128 // 2)
@@ -1099,8 +1093,11 @@ def renderRegisterPanel():
     renderScaled(login_panel, centerAnchor(750, 768, 0.5, 0.3375, 0, 128 // 2))
     renderScaled(text_username, centerAnchor(128, 70, 0.5, 0.075, 0, 128 // 2 - 70+32))
     renderTextBox("username", centerAnchor(512, 70, 0.5, 0.075, 0, 128 // 2+32))
-    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100+32))
-    renderTextBox("password", centerAnchor(512, 70, 0.5, 0.225, 0, 128 // 2 - 30+32), True)
+    renderScaled(text_nick, centerAnchor(128, 70, 0.5, 0.225, 0, 128 // 2 - 100+32))
+    renderTextBox("nick", centerAnchor(512, 70, 0.5, 0.225, 0, 128 // 2 - 30+32))
+
+    renderScaled(text_password, centerAnchor(128, 70, 0.5, 0.375, 0, 128 // 2 - 130 + 32))
+    renderTextBox("password", centerAnchor(512, 70, 0.5, 0.375, 0, 128 // 2 - 60 + 32), True)
     register_b.draw()
     register_back_b.draw()
     if register_back_b.pressed:
@@ -1213,6 +1210,17 @@ class Achievement:
                 return trophy_bronze
             else:
                 return trophy_none
+    def setTier(self, tier):
+        if tier == 3:
+            self.score = self.gold_prize
+        elif tier == 2:
+            self.score = self.silver_prize
+        elif tier == 1:
+            self.score = self.bronze_prize
+        else:
+            self.score = 0
+    
+
 
 achievements =\
 [
@@ -1229,6 +1237,8 @@ achievements =\
     Achievement("Pilny Student", "Przejdź 1 kierunek studiów bez ubytków", 1, 1, 1),
     Achievement("Wieczny Student", "Przeżyj ~ minut w trybie nieskończonym", 5, 10, 20),
 ]
+
+achievements[3].setScore(32)
 
 def renderAchievements():
     renderScaled(notebook_achievements_background, centerAnchor(1920, 1080))
@@ -1450,7 +1460,7 @@ def renderWin():
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.3, 0.8))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.1, 0.8))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.2, 0.6))
-    #playMusic("wintheme")
+
 
 gameState = "main_menu"
 running = True
@@ -1497,7 +1507,8 @@ while running:
             mouse = pygame.mouse.get_pos()
             if gameState == "main_menu":
                 if centerAnchor(256, 80, 0.5, 0.30, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
-                    gameState = "difficulty_setter" # difficulty_setter
+                    gameState = "win" # difficulty_setter
+                    playMusic("wintheme")
                     announcement = ""
                 elif centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
@@ -1516,11 +1527,11 @@ while running:
                 elif centerAnchor(256, 70, 0.5, 0.4, -136, 128 // 2+32).collidepoint(mouse[0], mouse[1]):
                     gameState = "register_panel"
             elif gameState == "register_panel":
-                if centerAnchor(256, 70, 0.5, 0.4, 0, 128 // 2+32).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(256, 70, 0.5, 0.55, 0, 128 // 2+32).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
                     announcement = ""
-                elif centerAnchor(157, 60, 0.5, 0.3, 0, 128 // 2 - 30+32).collidepoint(mouse[0], mouse[1]):
-                    signUp(text_boxes['username'], text_boxes['password'])
+                elif centerAnchor(256, 70, 0.5, 0.45, 0, 128 // 2 - 30+32).collidepoint(mouse[0], mouse[1]):
+                    signUp(text_boxes['username'], text_boxes['nick'], text_boxes['password'])
             elif gameState == "difficulty_setter":
                 if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
