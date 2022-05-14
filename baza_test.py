@@ -86,8 +86,8 @@ def dbPushUsername(username, email):
         achievementData = {'nick': username, 1: 'F', 2: 'F', 3: 'F'}
         db.child("achievements").push(achievementData)
 
-def dbPushAchievement(username,achievementNum):
-    data = {'nick': username, achievementNum: 'T'}
+def dbPushAchievement(username,achievementNum, achievementTier):
+    data = {'nick': username, achievementNum: achievementTier}
     users = db.child('achievements').order_by_child("nick").equal_to(data['nick']).get()
     for user in users.each():
         db.child("achievements").child(user.key()).update({achievementNum: 'T'})
