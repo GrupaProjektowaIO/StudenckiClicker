@@ -22,13 +22,13 @@ storage = firebase.storage()
 
 
 def login():
-    email = input("Podaj email: ")
-    password = input("Podaj haslo: ")
-    try:
-        auth.sign_in_with_email_and_password(email, password)
-        print("Pomyslny login")
-    except:
-        print("Zly login lub haslo")
+    email = "test1337@gmail.com"
+    password = "test1337"
+    auth.sign_in_with_email_and_password(email, password)
+    print("Pomyslny login")
+    users = db.child('users').order_by_child("email").equal_to(email).get()
+    for user in users.each():
+        username = user.val()['nick']
 
 
 # Rejestracja
@@ -71,10 +71,10 @@ def dbGetHighscore():
 
 
 def dbPushUsername(username, email):
-    special_characters = " !\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+    special_characters = " \"#$%&'()*+,/:;<=>?@[\]^`{|}~"
     data = {'nick': username, 'email': email}
     users = db.child('users').order_by_child("nick").equal_to(data['nick']).get()
-    if len(users.val())>0:
+    if len(users.val()) > 0:
         announcement = "Ten nick już istnieje."
         print(announcement)
     elif any(character in special_characters for character in username):
@@ -83,17 +83,69 @@ def dbPushUsername(username, email):
     else:
         db.child("users").push(data)
         # tworzenie informacji o osiagnieciach w bazie danych
-        achievementData = {'nick': username, 1: 'F', 2: 'F', 3: 'F'}
+        achievementData = {'nick': username, 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0}
         db.child("achievements").push(achievementData)
 
-def dbPushAchievement(username,achievementNum, achievementTier):
-    data = {'nick': username, achievementNum: achievementTier}
-    users = db.child('achievements').order_by_child("nick").equal_to(data['nick']).get()
+def signUp(email, username, password):
+    global logged_username
+    global gameState
+    global announcement
+    print("Rejestracja")
+    try:
+        special_characters = " \"#$%&'()*+,/:;<=>?@[\]^`{|}~"
+        data = {'nick': username, 'email': email}
+        users = db.child('users').order_by_child("nick").equal_to(data['nick']).get()
+        if len(users.val()) > 0:
+            announcement = "Ten nick już istnieje."
+            print(announcement)
+        elif any(character in special_characters for character in username):
+            announcement = "Nick nie moze miec znakow specjalnych."
+            print(announcement)
+        else:
+            auth.create_user_with_email_and_password(email, password)
+            db.child("users").push(data)
+            # tworzenie informacji o osiagnieciach w bazie danych
+            achievementData = {'nick': username, 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0}
+            db.child("achievements").push(achievementData)
+            print("Pomyslnie zarejestrowano")
+            logged_username = username
+            gameState = "main_menu"
+    except Exception as e:
+        print(e)
+        error_json = e.args[1]
+        error = json.loads(error_json)['error']['message']
+        print(error)
+        # WEAK_PASSWORD : Password should be at least 6 characters
+        # EMAIL_EXISTS
+        if error == "EMAIL_EXISTS":
+            announcement = "E-mail jest już użyty!"
+        elif error == "MISSING_PASSWORD":
+            announcement = "Nie wpisano hasła!"
+        elif error == "INVALID_PASSWORD" or error == "INVALID_EMAIL":
+            announcement = "Niepoprawny login lub hasło!"
+        elif error == "WEAK_PASSWORD : Password should be at least 6 characters":
+            announcement = "Hasło powinno zawierać przynajmniej 6 znaków!"
+        else:
+            announcement = "Niepoprawny login!"
+            print(error)
+
+
+
+def dbPushAchievement(username, achievementNum, achievementTier):
+    users = db.child('achievements').order_by_child("nick").equal_to(username).get()
     for user in users.each():
-        db.child("achievements").child(user.key()).update({achievementNum: 'T'})
-# login()
+        db.child("achievements").child(user.key()).update({achievementNum: achievementTier})
+
+def dbGetAchievements(username):
+    users = db.child('achievements').order_by_child("nick").equal_to(username).get()
+    for user in users.each():
+        return user.val()
+
+login()
 # signUp()
 # dbPushHighscore()
 # dbGetHighscore()
-#dbPushUsername('siema1','siema1@gmail.com')
-dbPushAchievement('siema1',2)
+# dbPushUsername('siema1','siema1@gmail.com')
+achievements = dbGetAchievements("test1337")
+print(achievements)
+dbPushAchievement('siema1', 2, 1)
