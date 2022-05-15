@@ -255,6 +255,8 @@ current_game_background = game_background
 notebook_background = pygame.image.load("sprites/notebook.png")
 end_game_button = pygame.image.load("sprites/end_game_button.png")
 end_game_button_p = pygame.image.load("sprites/end_game_button_p.png")
+win_game_button = pygame.image.load("sprites/end_game_button.png")
+win_game_button_p = pygame.image.load("sprites/end_game_button_p.png")
 tooltip_button = pygame.image.load("sprites/tooltip_button.png")
 tooltip_button_p = pygame.image.load("sprites/tooltip_button_p.png")
 try_again_button = pygame.image.load("sprites/try_again_button.png")
@@ -365,6 +367,7 @@ class Animation:
 cloud = Animation("cloud", 6, 2.5)
 sun = Animation("Sun", 2, 3)
 smoke = Animation("Smoke", 4, 2)
+bird = Animation("bird", 2, 4)
 game_opening_easy = Animation("game_opening_easy", 6, 3)
 game_opening_medium = Animation("game_opening_medium", 6, 3)
 game_opening_hard = Animation("game_opening_hard", 6, 3)
@@ -920,6 +923,8 @@ tooltip_b = Button(tooltip_button,tooltip_button_p, 256, 80, 0.5, 0.5, 0, 128 //
 try_again_b = Button(try_again_button,try_again_button_p, 256+96, 80, 0.5, 1, -256, -64)
 end_game_b = Button(end_game_button,end_game_button_p, 256, 80, 0.5, 1, 256, -64)
 
+win_game_b = Button(win_game_button, win_game_button_p, 256, 80, 0.5, 1, 0, -64)
+
 def renderObjectivePaper(index=0):
     o_type = 0
     if objectives[index].isSession():
@@ -1219,7 +1224,15 @@ class Achievement:
             self.score = self.bronze_prize
         else:
             self.score = 0
-    
+    def getTier(self):
+        if self.score >= self.gold_prize:
+            return 3
+        elif self.score >= self.silver_prize:
+            return 2
+        elif self.score >= self.bronze_prize:
+            return 1
+        else:
+            return 0
 
 
 achievements =\
@@ -1237,8 +1250,6 @@ achievements =\
     Achievement("Pilny Student", "Przejdź 1 kierunek studiów bez ubytków", 1, 1, 1),
     Achievement("Wieczny Student", "Przeżyj ~ minut w trybie nieskończonym", 5, 10, 20),
 ]
-
-achievements[3].setScore(32)
 
 def renderAchievements():
     renderScaled(notebook_achievements_background, centerAnchor(1920, 1080))
@@ -1460,6 +1471,10 @@ def renderWin():
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.3, 0.8))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.1, 0.8))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.2, 0.6))
+    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.9, 0.7))
+    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.95, 0.75))
+    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.96, 0.66))
+    win_game_b.draw()
 
 
 gameState = "main_menu"
@@ -1553,6 +1568,10 @@ while running:
                     gameState = "opening"
             elif gameState == "opening":
                 dialog += 1
+            elif gameState == "win":
+                if centerAnchor(256, 80, 0.5, 1, 0, -64).collidepoint(mouse[0], mouse[1]):
+                    gameState = "main_menu"
+                    playMusic("maintheme")
             elif gameState == "legend":
                 if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
