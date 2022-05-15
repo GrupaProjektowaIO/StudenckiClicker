@@ -406,7 +406,7 @@ class Animation:
 cloud = Animation("cloud", 6, 2.5)
 sun = Animation("Sun", 2, 3)
 smoke = Animation("Smoke", 4, 2)
-bird = Animation("bird", 2, 4)
+bird = Animation("bird", 8, 2)
 game_opening_easy = Animation("game_opening_easy", 6, 3)
 game_opening_medium = Animation("game_opening_medium", 6, 3)
 game_opening_hard = Animation("game_opening_hard", 6, 3)
@@ -623,8 +623,8 @@ biret_loops = 6
 
 game_time = 0
 session_errors = 0
-session_delay = 2 * 1000 * 60  # 3
-session_duration = 1 * 1000 * 60
+session_delay = .2 * 1000 * 60  # 3
+session_duration = .1 * 1000 * 60
 isSession = False
 
 clock_activated = False
@@ -1435,6 +1435,7 @@ def renderGame():
             session_errors += 1
         if biret_current_loops == biret_loops:
             gameState = "win"
+            playMusic("wintheme")
 
 
 def renderDifficultySetter():
@@ -1532,9 +1533,9 @@ def renderWin():
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.3, 0.8))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.1, 0.8))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.2, 0.6))
-    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.9, 0.7))
-    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.95, 0.75))
-    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.96, 0.66))
+    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.9, 0.7, bird.index * -20))
+    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.95, 0.75, bird.index * -20))
+    renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.96, 0.66, bird.index * -20))
     win_game_b.draw()
 
 
@@ -1586,8 +1587,8 @@ while running:
             mouse = pygame.mouse.get_pos()
             if gameState == "main_menu":
                 if centerAnchor(256, 80, 0.5, 0.30, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
-                    gameState = "win"  # difficulty_setter
-                    playMusic("wintheme")
+                    gameState = "difficulty_setter"  # difficulty_setter
+
                     announcement = ""
                 elif centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
