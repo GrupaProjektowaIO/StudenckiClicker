@@ -146,6 +146,14 @@ def dbPushAchievement(username, achievementNum, achievementTier):
 def dbGetAchievements(username):
     users = db.child('achievements').order_by_child("nick").equal_to(username).get()
     for user in users.each():
+        print("!!!" + str(user.val()) + "!!!")
+        ach = str(user.val()).split(":")
+        i = 0
+        for a in ach:
+            if 13 > i > 0:
+                print(a)
+                achievements[i - 1].setTier(ord(a[1]) - 48)
+            i += 1
         return user.val()
 
 # enums
@@ -1295,12 +1303,12 @@ achievements =\
     Achievement("Mól książkowy", "Podczas rozgrywki użyj ~ Książek", 5, 25, 50),
     Achievement("Zegarmistrz", "Podczas rozgrywki użyj ~ Zegarów", 5, 25, 50),
     Achievement("Trening na pełnej", "Podczas rozgrywki użyj ~ Hantli", 5, 25, 50),
-    Achievement("Bananowy Student", "Przejdź do następnej sesji z 2 ubytkami", 1, 1, 1),
-    Achievement("Warunkowy Student", "Przejdź do następnej sesji z 1 ubytkiem", 1, 1, 1),
-    Achievement("Licencjat", "Ukończ studia podyplomowe", 1, 1, 1),
-    Achievement("Anonymous", "Ukończ studia informatyczne", 1, 1, 1),
-    Achievement("Doktor House", "Ukończ studia medyczne", 1, 1, 1),
-    Achievement("Pilny Student", "Przejdź 1 kierunek studiów bez ubytków", 1, 1, 1),
+    Achievement("Bananowy Student", "Przejdź do następnej sesji z 2 ubytkami", 1, 2, 3),
+    Achievement("Warunkowy Student", "Przejdź do następnej sesji z 1 ubytkiem", 1, 2, 3),
+    Achievement("Licencjat", "Ukończ studia podyplomowe", 1, 2, 3),
+    Achievement("Anonymous", "Ukończ studia informatyczne", 1, 2, 3),
+    Achievement("Doktor House", "Ukończ studia medyczne", 1, 2, 3),
+    Achievement("Pilny Student", "Przejdź 1 kierunek studiów bez ubytków", 1, 2, 3),
     Achievement("Wieczny Student", "Przeżyj ~ minut w trybie nieskończonym", 5, 10, 20),
 ]
 
