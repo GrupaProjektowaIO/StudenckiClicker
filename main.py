@@ -251,6 +251,8 @@ text_block_container = pygame.image.load("sprites/text_container.png")
 # sprites - main menu
 pixel = pygame.image.load("sprites/pixel.png")
 pixel_white = pygame.image.load("sprites/pixel_white.png")
+warning_login = pygame.image.load("sprites/warning_login.png")
+text_warning_login = font_title.render(" W celu zdobycia osiągnięć musisz być zalogowany! ", False, (255, 0, 0))
 cursor = pygame.image.load("sprites/cursor.png")
 x_button = pygame.image.load("sprites/x_button.png")
 x_button_p = pygame.image.load("sprites/x_button_p.png")
@@ -269,6 +271,8 @@ achievements_button_p = pygame.image.load("sprites/achievements_button_p.png")
 back_button_p = pygame.image.load("sprites/back_button_p.png")
 register_button_p = pygame.image.load("sprites/register_button_p.png")
 exit_button_p = pygame.image.load("sprites/exit_button_p.png")
+logout_button = pygame.image.load("sprites/exit_button.png")
+logout_button_p = pygame.image.load("sprites/exit_button_p.png")
 login_panel = pygame.image.load("sprites/login_panel.png")
 # sprites - difficulty options
 informatyczne_button = pygame.image.load("sprites/informatyczne_button.png")
@@ -386,7 +390,7 @@ antienergy_drink = pygame.image.load("sprites/power_ups/antienergy_drink.png")
 clickSound = pygame.mixer.Sound('audio/click.wav')
 winclickSound = pygame.mixer.Sound('audio/winclick.wav')
 midclickSound = pygame.mixer.Sound('audio/midclick.wav')
-
+achievementgetSound = pygame.mixer.Sound('audio/winclick.wav')
 
 # animations
 class Animation:
@@ -492,6 +496,7 @@ class Objective:
     def update(self):
         global premie_lotne_timer
         global premie_lotne_sprite_timer
+        global premie_lotne_x, premie_lotne_y
         if self.timer < 0:
             self.points -= timer.get_time() / 1000
             if self.points < 0:
@@ -506,6 +511,9 @@ class Objective:
             premie_lotne_timer -= timer.get_time() / 3
         if premie_lotne_sprite_timer > 0:
             premie_lotne_sprite_timer -= timer.get_time() / 3
+        if premie_lotne_sprite_timer <= 0:
+            premie_lotne_x = 100000
+            premie_lotne_y = 100000
 
     def clicked(self):
         global premie_lotne_x
@@ -650,6 +658,7 @@ premie_lotne_type = 0
 premie_lotne_sprite_timer = 0
 premie_lotne_sprite_timer_duration = 2000
 
+endless_time = 0
 
 def getPowerUpSprite(t):
     global clock_activated
@@ -688,17 +697,21 @@ def activatePowerUp(t):
     global premie_lotne_is_negative
     global premie_lotne_x
     global premie_lotne_y
-    premie_lotne_x = 10000
-    premie_lotne_y = 10000
+    premie_lotne_x = 100000
+    premie_lotne_y = 100000
     premie_lotne_timer = premie_lotne_base_duration
     premie_lotne_sprite_timer = -1
     if t == 0:
         clock_activated = True
+        achievements[3].addScore()
     elif t == 1:
         coffee_activated = True
+        achievements[1].addScore()
     elif t == 2:
         energy_drink_activated = True
+        achievements[0].addScore()
     elif t == 3:
+        achievements[2].addScore()
         if premie_lotne_is_negative:
             objectives[0].points = 0
             objectives[1].points = 0
@@ -711,6 +724,7 @@ def activatePowerUp(t):
             objectives[1].clicked()
             objectives[2].clicked()
     elif t == 4:
+        achievements[4].addScore()
         objectives[0].setLower()
         objectives[1].setLower()
         objectives[2].setLower()
@@ -735,6 +749,7 @@ text_boxes = {
 
 
 def refreshGame():
+    global endless_time
     global health_max
     global health_current
     global health_drain
@@ -758,6 +773,7 @@ def refreshGame():
     global session_errors
     global birret_current_loops
     global dialog
+    endless_time = 0
     dialog = 0
     birret_current_loops = 0
     session_errors = 0
@@ -975,10 +991,10 @@ login_enter_b = Button(login_button, login_button_p, 256, 80, 0.5, 0.40, 0, 128 
 exit_b = Button(exit_button, exit_button_p, 256, 80, 0.5, 0.70, 0, 128 // 2)
 achievements_b = Button(achievements_button, achievements_button_p, 256, 80, 0.5, 0.6, 0, 128 // 2)
 # login
-
 login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30 + 32)
 login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2 + 32)
 register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2 + 32)
+logout_b = Button(logout_button, logout_button_p, 160, 64, 0, 0, 80 + len(logged_username) * 6.5 + 17 * 6.5, 80)
 
 # register
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.45, 0, 128 // 2 - 30 + 32)
@@ -986,8 +1002,8 @@ register_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.55, 0, 128 
 
 # legend
 tooltip_b = Button(tooltip_button, tooltip_button_p, 256, 80, 0.5, 0.5, 0, 128 // 2)
-try_again_b = Button(try_again_button, try_again_button_p, 256 + 96, 80, 0.5, 1, -256, -64)
-end_game_b = Button(end_game_button, end_game_button_p, 256, 80, 0.5, 1, 256, -64)
+try_again_b = Button(try_again_button, try_again_button_p, 256 + 96, 80, 0.5, 1, -256-128, -64)
+end_game_b = Button(end_game_button, end_game_button_p, 256, 80, 0.5, 1, 256+128, -64)
 
 
 win_game_b = Button(win_game_button, win_game_button_p, 256, 80, 0.5, 1, 0, -64)
@@ -1122,6 +1138,7 @@ def renderMainMenu():
     if not logged_username == "":
         render = font.render("Zalogowano jako: " + logged_username, False, (0, 0, 0))
         screen.blit(render, centerAnchor(100, 20, 0, 0, 70, 20))
+        logout_b.draw()
     else:
         render = font.render("Nie zalogowano", False, (0, 0, 0))
         screen.blit(render, centerAnchor(100, 20, 0, 0, 70, 20))
@@ -1234,15 +1251,26 @@ def renderLegend():
     renderScaled(antienergy_drink, centerAnchor(128, 128, 0.75, 0, -216, 768 + 64))
     renderScaled(text_legend_premie_lotne_antienergy_drink, centerAnchor(550, 32, 0.75, 0, 162, 768 + 96))
 
-
+achievementCount = 0
+achievement_popup_index = 0
+achievement_popup_time = 0
+def showAchievementPopup(index):
+    global achievement_popup_time, achievement_popup_index
+    achievement_popup_time = 3 * 1000
+    achievement_popup_index = index
+    achievementgetSound.play()
+    dbPushAchievement(logged_username, index, achievements[index].getTier())
 class Achievement:
-    def __init__(self, title, desc, bronze_prize, silver_prize, gold_prize):
-        self.title = title
+    def __init__(self, title1, desc, bronze_prize, silver_prize, gold_prize):
+        global achievementCount
+        self.title = title1
         self.desc = desc
         self.score = 0
         self.bronze_prize = bronze_prize
         self.silver_prize = silver_prize
         self.gold_prize = gold_prize
+        self.index = achievementCount
+        achievementCount += 1
 
     def getTitle(self):
         if logged_username == "":
@@ -1255,7 +1283,7 @@ class Achievement:
             return "?????????????????"
         else:
             if self.score >= self.gold_prize:
-                return "MAX"
+                return "       MAX       "
             elif self.score >= self.silver_prize:
                 return self.desc.replace("~", str(self.gold_prize))
             elif self.score >= self.bronze_prize:
@@ -1294,6 +1322,22 @@ class Achievement:
             return 1
         else:
             return 0
+    def addScore(self, instagold=False):
+        if logged_username != "":
+            tier = self.getTier()
+            if instagold:
+                self.setTier(3)
+            else:
+                self.score += 1
+            if self.getTier() > tier:
+                showAchievementPopup(self.index)
+    def addScoreEndless(self, time):
+        if logged_username != "":
+            tier = self.getTier()
+            if time / 60000 > self.score:
+                self.score = time / 60000
+            if self.getTier() > tier:
+                showAchievementPopup(self.index)
 
 
 achievements =\
@@ -1341,6 +1385,9 @@ def renderGame():
     global gameState
     global birret_current_loops
     global isSession
+    global achievement_popup_time
+    global achievement_popup_index
+    global endless_time
     game_time += timer.get_time()
     renderScaled(board, centerAnchor(512, 256, 0.5, 0, 0, 256 // 2 + 20))
     if game_time > session_delay:
@@ -1439,12 +1486,31 @@ def renderGame():
             biret_current = 50
         elif biret_current < biret_max * 0.625:
             session_errors += 2
+            achievements[5].addScore(True)
         elif biret_current < biret_max * 0.75:
             session_errors += 1
+            achievements[6].addScore(True)
         if biret_current_loops == biret_loops:
             gameState = "win"
             playMusic("wintheme")
+            if session_errors == 0:
+                achievements[10].addScore(True)
+            if current_difficulty == 0:
+                achievements[7].addScore(True)
+            elif current_difficulty == 1:
+                achievements[8].addScore(True)
+            elif current_difficulty == 2:
+                achievements[9].addScore(True)
+            elif current_difficulty == 3:
+                achievements[11].addScoreEndless(endless_time)
 
+    if current_difficulty == 3:
+        endless_time += timer.get_time()
+    if achievement_popup_time > 0:
+        achievement_popup_time -= timer.get_time()
+        renderScaled(achievements[achievement_popup_index].getTrophy(), centerAnchor(224 * 3, 64 * 1.5, 0, 0.1, 224 * 1.5))
+        renderScaled(font_title.render(achievements[achievement_popup_index].getTitle(), False, (0, 0, 0)), centerAnchor(300, 64 * 1.5 / 2, 0, 0.1, 380, -24))
+        renderScaled(font_title.render("Zdobyto osiągnięcie!", False, (0, 0, 0)), centerAnchor(300, 64 * 1.5 / 2, 0, 0.1, 380, 16))
 
 def renderDifficultySetter():
     mouse = pygame.mouse.get_pos()
@@ -1459,6 +1525,9 @@ def renderDifficultySetter():
     else:
         renderScaled(main_menu_background, centerAnchor(1920, 1080))
     renderScaled(board, centerAnchor(415 * 2, 256 * 2, 0.25, 0.5, 128, -64))
+    if logged_username == "":
+        renderScaled(warning_login, centerAnchor(640+256+256+256, 128, 0.5, 0.075))
+        renderScaled(text_warning_login, centerAnchor(620+256+256+256, 118, 0.5, 0.075))
 
     if centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.25).collidepoint(mouse[0], mouse[1]):
         renderScaled(text_level_desc_1_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
@@ -1531,10 +1600,14 @@ def renderOpening():
 
 
 def renderGameOver():
+    global endless_time
+    global current_difficulty
+    global font_title
     renderScaled(gameover_background.play(), centerAnchor(1920, 1080))
     try_again_b.draw()
     end_game_b.draw()
-
+    if current_difficulty == 3: #256, 80, 0.5, 1, 256+128, -64
+        renderScaled(font_title.render(str(endless_time // 1000), False, (255, 255, 255)), centerAnchor(256+64, 80, 0.5, 1, 0, -64))
 
 def renderWin():
     renderScaled(win_background.play(), centerAnchor(1920, 1080))
@@ -1594,9 +1667,13 @@ while running:
         if event.type == pygame.MOUSEBUTTONUP:
             mouse = pygame.mouse.get_pos()
             if gameState == "main_menu":
+                if logged_username != "" and centerAnchor(160, 64, 0, 0, 80 + len(logged_username) * 6.5 + 17 * 6.5, 80).collidepoint(mouse[0], mouse[1]):
+                    logged_username = ""
+                    text_boxes["username"] = ""
+                    text_boxes["password"] = ""
+                    text_boxes["nick"] = ""
                 if centerAnchor(256, 80, 0.5, 0.30, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "difficulty_setter"  # difficulty_setter
-
                     announcement = ""
                 elif centerAnchor(256, 80, 0.5, 0.40, 0, 128 // 2).collidepoint(mouse[0], mouse[1]):
                     gameState = "login_panel"
@@ -1652,10 +1729,10 @@ while running:
                 if centerAnchor(64, 64, 1, 0, -32, 32).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
             elif gameState == "game_over":
-                if centerAnchor(256 + 96, 80, 0.5, 1, -256, -64).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(256 + 96, 80, 0.5, 1, -256-128, -64).collidepoint(mouse[0], mouse[1]):
                     gameState = "difficulty_setter"
                     playMusic("maintheme")
-                if centerAnchor(256, 80, 0.5, 1, 256, -64).collidepoint(mouse[0], mouse[1]):
+                if centerAnchor(256, 80, 0.5, 1, 256+128, -64).collidepoint(mouse[0], mouse[1]):
                     gameState = "main_menu"
                     playMusic("maintheme")
             elif gameState == "game":
