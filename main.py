@@ -271,8 +271,8 @@ achievements_button_p = pygame.image.load("sprites/achievements_button_p.png")
 back_button_p = pygame.image.load("sprites/back_button_p.png")
 register_button_p = pygame.image.load("sprites/register_button_p.png")
 exit_button_p = pygame.image.load("sprites/exit_button_p.png")
-logout_button = pygame.image.load("sprites/exit_button.png")
-logout_button_p = pygame.image.load("sprites/exit_button_p.png")
+logout_button = pygame.image.load("sprites/logout_button.png")
+logout_button_p = pygame.image.load("sprites/logout_button_p.png")
 login_panel = pygame.image.load("sprites/login_panel.png")
 # sprites - difficulty options
 informatyczne_button = pygame.image.load("sprites/informatyczne_button.png")
@@ -283,6 +283,7 @@ medyczne_button = pygame.image.load("sprites/medyczne_button.png")
 medyczne_button_p = pygame.image.load("sprites/medyczne_button_p.png")
 endless_button = pygame.image.load("sprites/endless_button.png")
 endless_button_p = pygame.image.load("sprites/endless_button_p.png")
+endless_button_i = pygame.image.load("sprites/endless_button_p.png")
 # sprites - game
 game_background = pygame.image.load("sprites/game_background.png")
 Computer_science_difficulty = pygame.image.load("sprites/Computer_science_difficulty.png")
@@ -639,8 +640,8 @@ biret_loops = 6
 
 game_time = 0
 session_errors = 0
-session_delay = .2 * 1000 * 60  # 3
-session_duration = .1 * 1000 * 60
+session_delay = 1.05 * 1000 * 60
+session_duration = .5 * 1000 * 60
 isSession = False
 
 clock_activated = False
@@ -820,6 +821,11 @@ def setDifficulty(level):
     isSession = False
     current_difficulty = level
     playMusic("gametheme")
+    health_drain = 1
+    sanity_drain = 1.15
+    time_drain = 1.175
+    premie_lotne_sprite_timer_duration = 2000
+    premie_lotne_chance = 2
     if level == 0:
         health_drain *= 0.95
         sanity_drain *= 0.95
@@ -829,21 +835,21 @@ def setDifficulty(level):
         premie_lotne_chance *= 2
         biret_loops = 6
     elif level == 2:
-        health_drain *= 1.45
-        sanity_drain *= 1.45
-        time_drain *= 1.45
+        health_drain *= 1.25
+        sanity_drain *= 1.25
+        time_drain *= 1.25
         current_game_background = Medic_school_difficulty
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
-        biret_loops = 12
+        biret_loops = 6
     elif level == 3:
-        health_drain *= 1.45
-        sanity_drain *= 1.45
-        time_drain *= 1.45
+        health_drain *= 1.25
+        sanity_drain *= 1.25
+        time_drain *= 1.25
         current_game_background = endless_background
         premie_lotne_sprite_timer_duration *= 1
         premie_lotne_chance *= 1
-        biret_loops = 12
+        biret_loops = 9999999
         objective_paper = objective_paper_endless
         playMusic("endlesstheme")
 
@@ -994,7 +1000,7 @@ achievements_b = Button(achievements_button, achievements_button_p, 256, 80, 0.5
 login_b = Button(login_button, login_button_p, 157, 60, 0.5, 0.3, 0, 128 // 2 - 30 + 32)
 login_back_b = Button(back_button, back_button_p, 256, 70, 0.5, 0.4, 136, 128 // 2 + 32)
 register_enter_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.4, -136, 128 // 2 + 32)
-logout_b = Button(logout_button, logout_button_p, 160, 64, 0, 0, 80 + len(logged_username) * 6.5 + 17 * 6.5, 80)
+logout_b = Button(logout_button, logout_button_p, 60, 60, 0, 0, 80 + len(logged_username) * 6.5 + 17 * 6.5, 80)
 
 # register
 register_b = Button(register_button, register_button_p, 256, 70, 0.5, 0.45, 0, 128 // 2 - 30 + 32)
@@ -1355,6 +1361,8 @@ achievements =\
     Achievement("Pilny Student", "Przejdź 1 kierunek studiów bez ubytków", 1, 2, 3),
     Achievement("Wieczny Student", "Przeżyj ~ minut w trybie nieskończonym", 5, 10, 20),
 ]
+def isEndlessUnlocked():
+    return achievements[7].getTier() == 3 and achievements[8].getTier() and achievements[9].getTier()
 
 def renderAchievements():
     renderScaled(notebook_achievements_background, centerAnchor(1920, 1080))
@@ -1465,7 +1473,7 @@ def renderGame():
 
     if premie_lotne_sprite_timer > 0:
         renderScaled(getPowerUpSprite(premie_lotne_type), centerAnchor(128, 128, premie_lotne_x, premie_lotne_y))
-    if 60 * 1000 < game_time < session_delay:
+    if 60 * 1000 - 5000 < session_delay - game_time < 60 * 1000:
         renderScaled(sesja, centerAnchor(196 * 3, 64 * 3, 1, 0, -196, 540))
     if game_time > session_duration + session_delay:
         global biret_current_loops
@@ -1501,11 +1509,10 @@ def renderGame():
                 achievements[8].addScore(True)
             elif current_difficulty == 2:
                 achievements[9].addScore(True)
-            elif current_difficulty == 3:
-                achievements[11].addScoreEndless(endless_time)
 
     if current_difficulty == 3:
         endless_time += timer.get_time()
+        achievements[11].addScoreEndless(endless_time)
     if achievement_popup_time > 0:
         achievement_popup_time -= timer.get_time()
         renderScaled(achievements[achievement_popup_index].getTrophy(), centerAnchor(224 * 3, 64 * 1.5, 0, 0.1, 224 * 1.5))
@@ -1520,7 +1527,7 @@ def renderDifficultySetter():
         renderScaled(Computer_science_difficulty, centerAnchor(1920, 1080))
     elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.55).collidepoint(mouse[0], mouse[1]):
         renderScaled(Medic_school_difficulty, centerAnchor(1920, 1080))
-    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]) and isEndlessUnlocked():
         renderScaled(endless_background, centerAnchor(1920, 1080))
     else:
         renderScaled(main_menu_background, centerAnchor(1920, 1080))
@@ -1541,7 +1548,7 @@ def renderDifficultySetter():
         renderScaled(text_level_desc_3_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
         renderScaled(text_level_desc_3_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
         renderScaled(text_level_desc_3_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
-    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
+    elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]) and isEndlessUnlocked():
         renderScaled(text_level_desc_4_dif, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -126))
         renderScaled(text_level_desc_4_len, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -64))
         renderScaled(text_level_desc_4_boost, centerAnchor(380 * 2, 32 * 2, 0.25, 0.5, 128, -2))
@@ -1552,7 +1559,10 @@ def renderDifficultySetter():
     podyplomowe_b.draw()
     informatyczne_b.draw()
     medyczne_b.draw()
-    endless_b.draw()
+    if isEndlessUnlocked():
+        endless_b.draw()
+    else:
+        renderScaled(endless_button_i, centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7))
     x_b.draw()
 
 
@@ -1610,6 +1620,7 @@ def renderGameOver():
         renderScaled(font_title.render(str(endless_time // 1000), False, (255, 255, 255)), centerAnchor(256+64, 80, 0.5, 1, 0, -64))
 
 def renderWin():
+    global achievement_popup_time, achievement_popup_index
     renderScaled(win_background.play(), centerAnchor(1920, 1080))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.3, 0.8))
     renderScaled(cloud.play(), centerAnchor(96 * 4, 96 * 4, 0.1, 0.8))
@@ -1618,6 +1629,12 @@ def renderWin():
     renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.95, 0.75, bird.index * -20))
     renderScaled(bird.play(), centerAnchor(19 * 4, 17 * 4, 0.96, 0.66, bird.index * -20))
     win_game_b.draw()
+    if achievement_popup_time > 0:
+        achievement_popup_time -= timer.get_time()
+        renderScaled(achievements[achievement_popup_index].getTrophy(), centerAnchor(224 * 3, 64 * 1.5, 0, 0.1, 224 * 1.5))
+        renderScaled(font_title.render(achievements[achievement_popup_index].getTitle(), False, (0, 0, 0)), centerAnchor(300, 64 * 1.5 / 2, 0, 0.1, 380, -24))
+        renderScaled(font_title.render("Zdobyto osiągnięcie!", False, (0, 0, 0)), centerAnchor(300, 64 * 1.5 / 2, 0, 0.1, 380, 16))
+
 
 
 gameState = "main_menu"
@@ -1712,7 +1729,7 @@ while running:
                     refreshGame()
                     setDifficulty(2)
                     gameState = "opening"
-                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]):
+                elif centerAnchor(384 * 2, 89 * 1.5, 0.75, 0.7).collidepoint(mouse[0], mouse[1]) and isEndlessUnlocked():
                     refreshGame()
                     setDifficulty(3)
                     gameState = "opening"
